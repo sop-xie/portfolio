@@ -10,3 +10,45 @@ body {
   /* Keep text from touching the window edges on narrow screens */
   padding: 1em;
 }
+
+:root {
+  /* One place to define the accent color; everything else refers to it by name */
+  --color-accent: oklch(70% 35% 300);
+}
+
+body {
+  /* Tint built-in form controls (checkboxes, focus rings, etc.) with the accent color */
+  accent-color: var(--color-accent);
+}
+
+nav {
+  /* Lay the links out in a row */
+  display: flex;
+  margin-bottom: 1em;
+  /* Subtle gray line separating the nav from the page content */
+  border-bottom: 1px solid oklch(80% 3% 200);
+}
+
+nav a {
+  /* Each link takes an equal share of the row */
+  flex: 1;
+  text-decoration: none;
+  /* Use the surrounding text color instead of the default link blue */
+  color: inherit;
+  text-align: center;
+  padding: 0.5em;
+}
+
+nav a.current {
+  /* Thick gray bar marking the page you are on */
+  border-bottom: 0.4em solid oklch(80% 3% 200);
+  /* Shrink the padding by the border's thickness so the link doesn't get taller */
+  padding-bottom: 0.1em;
+}
+
+nav a:hover {
+  border-bottom: 0.4em solid var(--color-accent);
+  padding-bottom: 0.1em;
+  /* Same hue as the accent color, but very light and barely saturated */
+  background-color: oklch(from var(--color-accent) 95% 5% h);
+}
