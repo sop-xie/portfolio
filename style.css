@@ -1,8 +1,7 @@
 body {
-  /* Set line height to 1.5 times the font size
-	   and use the OS’s UI font as the website font
-	 */
-  font: 100%/1.5 system-ui;
+  /* Set line height to 1.5 times the font size and use Poppins as the
+     website font, falling back to the OS’s UI font if it fails to load */
+  font: 100%/1.5 "Poppins", system-ui;
   /* Cap the content width so lines of text don't get too long to read */
   max-width: 100ch;
   /* Split the leftover space evenly on the left and right, centering the content */
@@ -76,6 +75,8 @@ form label {
 }
 
 form button {
-  /* Stretch the button across both columns */
+  /* Give the button the whole row... */
   grid-column: 1 / -1;
+  /* ...but only make it as wide as its text, centered in that row */
+  justify-self: center;
 }
