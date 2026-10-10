@@ -25,7 +25,8 @@ body {
 nav {
   /* Lay the links out in a row */
   display: flex;
-  margin-bottom: 1em;
+  /* Space between the nav and the page title, the same on every page */
+  margin-bottom: 3.2em;
   /* Subtle gray line separating the nav from the page content */
   border-bottom: 1px solid oklch(80% 3% 200);
 }
@@ -86,6 +87,8 @@ form button {
 h1 {
   /* Make the page title clearly bigger than the h2s */
   font-size: 300%;
+  /* The nav's bottom margin already sets the space above the title */
+  margin-top: 0;
 }
 
 h1,
@@ -125,8 +128,6 @@ h6 {
   display: flex;
   align-items: start;
   gap: 2em;
-  /* Space between the nav and the title + photo */
-  margin-top: 4.4em;
   /* Let the photo drop below the text when there isn't room for both */
   flex-wrap: wrap;
 }
@@ -136,12 +137,6 @@ h6 {
      but never gets squeezed narrower than 15em */
   flex: 1;
   min-width: 15em;
-}
-
-.intro h1 {
-  /* Drop the heading's built-in top margin so the title itself, not the
-     empty space above it, lines up with the top of the photo */
-  margin-top: 0;
 }
 
 .intro img {
