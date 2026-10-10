@@ -121,10 +121,11 @@ h6 {
 }
 
 .intro {
-  /* Put the text and the photo side by side, vertically centered */
+  /* Put the text and the photo side by side, with their tops lined up */
   display: flex;
-  align-items: center;
+  align-items: start;
   gap: 2em;
+  margin-top: 2em;
   /* Let the photo drop below the text when there isn't room for both */
   flex-wrap: wrap;
 }
@@ -134,6 +135,12 @@ h6 {
      but never gets squeezed narrower than 15em */
   flex: 1;
   min-width: 15em;
+}
+
+.intro h1 {
+  /* Drop the heading's built-in top margin so the title itself, not the
+     empty space above it, lines up with the top of the photo */
+  margin-top: 0;
 }
 
 .intro img {
