@@ -40,8 +40,8 @@ nav a {
 }
 
 nav a.current {
-  /* Thick gray bar marking the page you are on */
-  border-bottom: 0.4em solid oklch(80% 3% 200);
+  /* Thick accent-colored bar marking the page you are on */
+  border-bottom: 0.4em solid var(--color-accent);
   /* Shrink the padding by the border's thickness so the link doesn't get taller */
   padding-bottom: 0.1em;
 }
