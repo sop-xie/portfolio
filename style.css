@@ -80,3 +80,40 @@ form button {
   /* ...but only make it as wide as its text, centered in that row */
   justify-self: center;
 }
+
+h1 {
+  /* Make the page title clearly bigger than the h2s */
+  font-size: 400%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  /* Headings are large, so the body's 1.5 line height looks too loose on them */
+  line-height: 1.1;
+  /* Break multi-line headings into lines of similar length */
+  text-wrap: balance;
+}
+
+.projects {
+  /* As many columns as fit, each at least 15em wide, sharing leftover space equally */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+  gap: 1em;
+}
+
+.projects article {
+  /* Each card covers 3 rows of the main grid (title, image, text) and
+     reuses them, so those parts line up across cards in the same row */
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+}
+
+.projects h2 {
+  /* The grid gap already spaces things out */
+  margin: 0;
+}
