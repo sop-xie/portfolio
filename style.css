@@ -13,6 +13,8 @@ body {
 :root {
   /* One place to define the accent color; everything else refers to it by name */
   --color-accent: oklch(70% 35% 300);
+  /* A darker version of the accent (same hue and colorfulness) that is readable as text */
+  --color-accent-dark: oklch(from var(--color-accent) 45% c h);
 }
 
 body {
@@ -138,4 +140,114 @@ h6 {
   /* Never let the photo be wider than the screen */
   max-width: 100%;
   height: auto;
+}
+
+/* ---------- Resume page ---------- */
+
+.resume section {
+  /* Lavender line separating each section from the one above */
+  border-top: 1px solid var(--color-accent);
+  padding-block: 1.5em;
+}
+
+.resume h2 {
+  /* Section names act as small labels rather than big headings */
+  margin: 0 0 0.75em;
+  font-size: 1em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent-dark);
+}
+
+@media (min-width: 45em) {
+  /* On wide screens only: section name in a narrow left column, content on the right */
+  .resume section {
+    display: grid;
+    grid-template-columns: 10em 1fr;
+    column-gap: 2em;
+  }
+
+  .resume section > * {
+    grid-column: 2;
+  }
+
+  .resume section > h2 {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+
+.resume section > p {
+  margin: 0;
+}
+
+.resume article + article {
+  /* Space between entries, but not above the first one */
+  margin-top: 1.5em;
+}
+
+.resume article header {
+  /* Title on the left, date/location pushed to the right;
+     the right part wraps underneath when there isn't room */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  column-gap: 1em;
+}
+
+.resume article h3 {
+  margin: 0;
+  font-size: 1em;
+}
+
+.resume article header p {
+  margin: 0;
+  font-size: 0.9em;
+  color: oklch(50% 3% 300);
+}
+
+.resume article header p + p {
+  /* A second detail line (the tools used) gets a full row of its own */
+  flex-basis: 100%;
+}
+
+.resume article ul {
+  margin: 0.5em 0 0;
+  padding-left: 1.2em;
+}
+
+.resume a {
+  color: var(--color-accent-dark);
+}
+
+.skills {
+  /* Category names in one column, their tags in the other */
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6em 1em;
+  align-items: baseline;
+}
+
+.skills h3 {
+  margin: 0;
+  font-size: 1em;
+}
+
+.skills ul {
+  /* Turn the list into a row of tags that wraps onto new lines */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skills li {
+  /* The pill shape: pale accent background with fully rounded ends */
+  padding: 0.1em 0.75em;
+  border-radius: 1em;
+  font-size: 0.9em;
+  background-color: oklch(from var(--color-accent) 95% 5% h);
 }
