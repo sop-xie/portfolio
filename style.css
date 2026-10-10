@@ -117,3 +117,25 @@ h6 {
   /* The grid gap already spaces things out */
   margin: 0;
 }
+
+.intro {
+  /* Put the text and the photo side by side, vertically centered */
+  display: flex;
+  align-items: center;
+  gap: 2em;
+  /* Let the photo drop below the text when there isn't room for both */
+  flex-wrap: wrap;
+}
+
+.intro div {
+  /* The text takes all the space the photo doesn't need,
+     but never gets squeezed narrower than 15em */
+  flex: 1;
+  min-width: 15em;
+}
+
+.intro img {
+  /* Never let the photo be wider than the screen */
+  max-width: 100%;
+  height: auto;
+}
