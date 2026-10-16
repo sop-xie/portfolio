@@ -13,8 +13,14 @@ body {
 :root {
   /* One place to define the accent color; everything else refers to it by name */
   --color-accent: oklch(70% 35% 300);
-  /* A darker version of the accent (same hue and colorfulness) that is readable as text */
-  --color-accent-dark: oklch(from var(--color-accent) 45% c h);
+  /* A version of the accent (same hue and colorfulness) that is readable as text:
+     dark purple on a light background, light lavender on a dark one */
+  --color-accent-dark: light-dark(
+    oklch(from var(--color-accent) 45% c h),
+    oklch(from var(--color-accent) 80% c h)
+  );
+  /* Follow the OS light/dark setting; default colors (canvas, canvastext) adapt */
+  color-scheme: light dark;
 }
 
 body {
@@ -27,8 +33,10 @@ nav {
   display: flex;
   /* Space between the nav and the page title, the same on every page */
   margin-bottom: 3.2em;
-  /* Subtle gray line separating the nav from the page content */
-  border-bottom: 1px solid oklch(80% 3% 200);
+  /* Semi-transparent, so the line looks subtle on both light and dark backgrounds */
+  --border-color: oklch(50% 10% 200 / 40%);
+  /* Subtle line separating the nav from the page content */
+  border-bottom: 1px solid var(--border-color);
 }
 
 nav a {
@@ -51,8 +59,9 @@ nav a.current {
 nav a:hover {
   border-bottom: 0.4em solid var(--color-accent);
   padding-bottom: 0.1em;
-  /* Same hue as the accent color, but very light and barely saturated */
-  background-color: oklch(from var(--color-accent) 95% 5% h);
+  /* A faint tint: 15% accent mixed into the page background (canvas),
+     so it stays subtle in both light and dark mode */
+  background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
 }
 
 input,
@@ -248,9 +257,10 @@ h6 {
 }
 
 .skills li {
-  /* The pill shape: pale accent background with fully rounded ends */
+  /* The pill shape: faint accent background with fully rounded ends */
   padding: 0.1em 0.75em;
   border-radius: 1em;
   font-size: 0.9em;
-  background-color: oklch(from var(--color-accent) 95% 5% h);
+  /* Mixed with the page background (canvas) so it works in light and dark mode */
+  background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
 }
