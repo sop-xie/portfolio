@@ -50,3 +50,19 @@ for (let p of pages) {
 
   nav.append(a);
 }
+
+// Is the OS currently in dark mode? (same media query CSS uses)
+let isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+
+document.body.insertAdjacentHTML(
+  'afterbegin',
+  `
+  <label class="color-scheme">
+    Theme:
+    <select>
+      <option value="light dark">Automatic (${isDark ? 'Dark' : 'Light'})</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </label>`,
+);

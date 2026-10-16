@@ -8,6 +8,8 @@ body {
   margin-inline: auto;
   /* Keep text from touching the window edges on narrow screens */
   padding: 1em;
+  /* Extra room at the top so the nav sits below the theme switcher */
+  padding-top: 3.5em;
 }
 
 :root {
@@ -66,7 +68,8 @@ nav a:hover {
 
 input,
 textarea,
-button {
+button,
+select {
   /* Form controls don't inherit the page font by default; make them match */
   font: inherit;
 }
@@ -263,4 +266,20 @@ h6 {
   font-size: 0.9em;
   /* Mixed with the page background (canvas) so it works in light and dark mode */
   background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
+}
+
+/* ---------- Theme switcher ---------- */
+
+.color-scheme {
+  /* Take it out of the page flow and pin it to the top-right corner of the window */
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  /* Smaller, so it doesn't compete with the nav */
+  font-size: 80%;
+}
+
+.color-scheme select {
+  /* Softer, rounder corners on the dropdown */
+  border-radius: 0.5em;
 }
