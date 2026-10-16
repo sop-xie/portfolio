@@ -66,3 +66,23 @@ document.body.insertAdjacentHTML(
     </select>
   </label>`,
 );
+
+let select = document.querySelector('.color-scheme select');
+
+// Apply a color scheme to the whole page and make the dropdown show it
+function setColorScheme(colorScheme) {
+  document.documentElement.style.setProperty('color-scheme', colorScheme);
+  select.value = colorScheme;
+}
+
+// On page load: reuse the choice saved last time, if there is one
+if ('colorScheme' in localStorage) {
+  setColorScheme(localStorage.colorScheme);
+}
+
+// When the user picks a new option: apply it and remember it
+select.addEventListener('input', function (event) {
+  console.log('color scheme changed to', event.target.value);
+  setColorScheme(event.target.value);
+  localStorage.colorScheme = event.target.value;
+});
