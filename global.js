@@ -86,3 +86,21 @@ select.addEventListener('input', function (event) {
   setColorScheme(event.target.value);
   localStorage.colorScheme = event.target.value;
 });
+
+// Contact form: build the mailto: link ourselves so spaces become %20, not +
+let form = document.querySelector('form');
+
+form?.addEventListener('submit', function (event) {
+  // Stop the browser from submitting the form its own way
+  event.preventDefault();
+
+  let data = new FormData(form);
+  let params = [];
+
+  for (let [name, value] of data) {
+    params.push(name + '=' + encodeURIComponent(value));
+  }
+
+  let url = form.action + '?' + params.join('&');
+  location.href = url;
+});
