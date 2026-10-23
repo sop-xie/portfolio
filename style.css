@@ -130,7 +130,7 @@ h6 {
   grid-row: span 3;
 }
 
-.projects h2 {
+.projects :is(h2, h3) {
   /* The grid gap already spaces things out */
   margin: 0;
 }
