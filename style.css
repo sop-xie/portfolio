@@ -135,9 +135,42 @@ h6 {
   margin: 0;
 }
 
-.latest-title {
+.section-title {
   /* A bit bigger than a normal h2 (150%), still smaller than the h1 (300%) */
   font-size: 200%;
+}
+
+#profile-stats dl {
+  /* Up to 4 equal columns, wrapping to fewer on narrow screens */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8em, 1fr));
+  gap: 1em;
+  margin: 0;
+}
+
+#profile-stats dl div {
+  /* Each label + number pair is its own tinted, rounded card */
+  padding: 0.75em 1em;
+  border-radius: 0.75em;
+  text-align: center;
+  /* Same tint as the skill tags, so it works in light and dark mode */
+  background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
+}
+
+#profile-stats dt {
+  /* Small uppercase label, like the resume section names */
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: oklch(50% 3% 300);
+}
+
+#profile-stats dd {
+  /* Big accent-colored number; dd has a default left margin we don't want */
+  margin: 0;
+  font-size: 200%;
+  font-weight: bold;
+  color: var(--color-accent-dark);
 }
 
 .intro {

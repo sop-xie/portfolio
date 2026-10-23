@@ -113,7 +113,7 @@ export async function fetchJSON(url) {
 
     // fetch only throws on network errors, so check for 404 etc. ourselves
     if (!response.ok) {
-      throw new Error(`Failed to fetch projects: ${response.statusText}`);
+      throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
     }
 
     // Wait for the body to be parsed from JSON text into an array/object
@@ -122,6 +122,11 @@ export async function fetchJSON(url) {
   } catch (error) {
     console.error('Error fetching or parsing JSON data:', error);
   }
+}
+
+// Get a user's public profile info (repos, followers, ...) from the GitHub API
+export async function fetchGitHubData(username) {
+  return fetchJSON(`https://api.github.com/users/${username}`);
 }
 
 // Build one <article> per project inside containerElement
