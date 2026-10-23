@@ -123,3 +123,27 @@ export async function fetchJSON(url) {
     console.error('Error fetching or parsing JSON data:', error);
   }
 }
+
+// Build one <article> per project inside containerElement
+export function renderProjects(projects, containerElement, headingLevel = 'h2') {
+  // Only allow real heading tags (h1–h6); anything else falls back to h2
+  if (!/^h[1-6]$/.test(headingLevel)) {
+    console.warn(`Invalid heading level "${headingLevel}", using h2 instead`);
+    headingLevel = 'h2';
+  }
+
+  // Clear out whatever was there so we don't end up with duplicates
+  containerElement.innerHTML = '';
+
+  for (let project of projects) {
+    let article = document.createElement('article');
+
+    article.innerHTML = `
+      <${headingLevel}>${project.title}</${headingLevel}>
+      <img src="${project.image}" alt="${project.title}">
+      <p>${project.description}</p>
+    `;
+
+    containerElement.appendChild(article);
+  }
+}
