@@ -104,3 +104,22 @@ form?.addEventListener('submit', function (event) {
   let url = form.action + '?' + params.join('&');
   location.href = url;
 });
+
+// Load a JSON file (or API response) and return it as JS data
+export async function fetchJSON(url) {
+  try {
+    // Wait for the network request to finish
+    const response = await fetch(url);
+
+    // fetch only throws on network errors, so check for 404 etc. ourselves
+    if (!response.ok) {
+      throw new Error(`Failed to fetch projects: ${response.statusText}`);
+    }
+
+    // Wait for the body to be parsed from JSON text into an array/object
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching or parsing JSON data:', error);
+  }
+}
