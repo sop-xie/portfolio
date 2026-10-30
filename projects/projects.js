@@ -76,6 +76,10 @@ function renderPieChart(projectsGiven) {
       });
   });
 
+  // SVG draws later elements on top, so move the selected slice to the end;
+  // otherwise its neighbors would cover part of its border
+  svg.select('.selected').raise();
+
   // Add one <li> per slice to the legend; --color hands the slice's color to the CSS
   data.forEach((d) => {
     legend

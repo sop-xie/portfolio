@@ -360,12 +360,23 @@ h6 {
 .selected {
   /* Bright violet stands out from the muted slices. !important is needed to
      beat the --color set in the legend item's style attribute */
-  --color: #c060ff !important;
+  --color: #9650ff !important;
 
   /* Slices get their color from fill, so point that at --color too.
      Legend swatches already read --color, so they need nothing extra */
   &:is(path) {
     fill: var(--color);
+    /* A border in the text color: white in dark mode, black in light mode.
+       Rounded corners keep it from spiking out at the slice's sharp tip */
+    stroke: canvastext;
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+
+  /* Give the legend swatch a matching border */
+  .swatch {
+    outline: 2px solid canvastext;
+    outline-offset: 1px;
   }
 }
 
