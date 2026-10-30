@@ -17,27 +17,12 @@ projectsTitle.textContent = `${projects.length} Projects`;
 // inner radius 0 means a solid shape (anything bigger would make a donut)
 let arcGenerator = d3.arc().innerRadius(0).outerRadius(50);
 
-// Group the projects by year and count each group, giving [[year, count], ...]
-let rolledData = d3.rollups(
-  projects,
-  (v) => v.length,
-  (d) => d.year,
-);
-
-// Convert to the shape the chart expects: each slice's size and what it stands for
-let data = rolledData.map(([year, count]) => {
-  return { value: count, label: year };
-});
-
 // d3.pie() works out each slice's start and end angles from the data;
 // .value() tells it which field of each object holds the slice's size
 let sliceGenerator = d3.pie().value((d) => d.value);
-let arcData = sliceGenerator(data);
 
-// Turn each slice's angles into an SVG path string
-let arcs = arcData.map((d) => arcGenerator(d));
-
-// A color scale: a function that takes an index and returns a color from this list
+// A color scale: a function that takes a label and returns a color from this list.
+// It remembers which color each label got, so a year keeps its color when searching
 let colors = d3.scaleOrdinal([
   '#cfb4ff', // lavender
   '#ec8ccb', // pink
@@ -47,20 +32,48 @@ let colors = d3.scaleOrdinal([
   '#b8d4f5', // pale sky blue
 ]);
 
-// Add one <path> per slice to the chart, each with its own color
-arcs.forEach((arc, idx) => {
-  d3.select('svg').append('path').attr('d', arc).attr('fill', colors(idx));
-});
+// Draw the pie chart and legend for whichever projects are passed in
+function renderPieChart(projectsGiven) {
+  // Group the projects by year and count each group, giving [[year, count], ...]
+  let rolledData = d3.rollups(
+    projectsGiven,
+    (v) => v.length,
+    (d) => d.year,
+  );
 
-// Add one <li> per slice to the legend; --color hands the slice's color to the CSS
-let legend = d3.select('.legend');
-data.forEach((d, idx) => {
-  legend
-    .append('li')
-    .attr('class', 'legend-item')
-    .attr('style', `--color:${colors(idx)}`)
-    .html(`<span class="swatch"></span> ${d.label} <em>(${d.value})</em>`);
-});
+  // Convert to the shape the chart expects: each slice's size and what it stands for
+  let data = rolledData.map(([year, count]) => {
+    return { value: count, label: year };
+  });
+
+  let arcData = sliceGenerator(data);
+
+  // Turn each slice's angles into an SVG path string
+  let arcs = arcData.map((d) => arcGenerator(d));
+
+  // Clear the previous chart and legend so they don't pile up on each redraw
+  let svg = d3.select('svg');
+  svg.selectAll('path').remove();
+  let legend = d3.select('.legend');
+  legend.selectAll('li').remove();
+
+  // Add one <path> per slice to the chart, each with its own color
+  arcs.forEach((arc, idx) => {
+    svg.append('path').attr('d', arc).attr('fill', colors(data[idx].label));
+  });
+
+  // Add one <li> per slice to the legend; --color hands the slice's color to the CSS
+  data.forEach((d) => {
+    legend
+      .append('li')
+      .attr('class', 'legend-item')
+      .attr('style', `--color:${colors(d.label)}`)
+      .html(`<span class="swatch"></span> ${d.label} <em>(${d.value})</em>`);
+  });
+}
+
+// Draw the chart for all the projects when the page first loads
+renderPieChart(projects);
 
 // Holds what the user has typed in the search bar (empty means show everything)
 let query = '';
@@ -78,6 +91,7 @@ searchInput.addEventListener('input', (event) => {
     return values.includes(query.toLowerCase());
   });
 
-  // Redraw the project list with just those projects
+  // Redraw the project list, chart and legend with just those projects
   renderProjects(filteredProjects, projectsContainer, 'h2');
+  renderPieChart(filteredProjects);
 });
