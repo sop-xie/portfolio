@@ -72,10 +72,11 @@ searchInput.addEventListener('input', (event) => {
   // Remember the current search text
   query = event.target.value;
 
-  // Keep only the projects whose title contains that text
-  let filteredProjects = projects.filter((project) =>
-    project.title.includes(query),
-  );
+  // Keep only the projects with that text in any field, ignoring upper/lower case
+  let filteredProjects = projects.filter((project) => {
+    let values = Object.values(project).join('\n').toLowerCase();
+    return values.includes(query.toLowerCase());
+  });
 
   // Redraw the project list with just those projects
   renderProjects(filteredProjects, projectsContainer, 'h2');
