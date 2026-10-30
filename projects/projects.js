@@ -64,3 +64,19 @@ data.forEach((d, idx) => {
 
 // Holds what the user has typed in the search bar (empty means show everything)
 let query = '';
+
+let searchInput = document.querySelector('.searchBar');
+
+// 'input' fires on every keystroke, so the results update as the user types
+searchInput.addEventListener('input', (event) => {
+  // Remember the current search text
+  query = event.target.value;
+
+  // Keep only the projects whose title contains that text
+  let filteredProjects = projects.filter((project) =>
+    project.title.includes(query),
+  );
+
+  // Redraw the project list with just those projects
+  renderProjects(filteredProjects, projectsContainer, 'h2');
+});
