@@ -17,11 +17,19 @@ projectsTitle.textContent = `${projects.length} Projects`;
 // inner radius 0 means a solid shape (anything bigger would make a donut)
 let arcGenerator = d3.arc().innerRadius(0).outerRadius(50);
 
-// The numbers the pie chart represents (each slice's share of the total)
-let data = [1, 2, 3, 4, 5, 5];
+// What the pie chart represents: each slice's size and what it stands for
+let data = [
+  { value: 1, label: 'apples' },
+  { value: 2, label: 'oranges' },
+  { value: 3, label: 'mangos' },
+  { value: 4, label: 'pears' },
+  { value: 5, label: 'limes' },
+  { value: 5, label: 'cherries' },
+];
 
-// d3.pie() works out each slice's start and end angles from the data
-let sliceGenerator = d3.pie();
+// d3.pie() works out each slice's start and end angles from the data;
+// .value() tells it which field of each object holds the slice's size
+let sliceGenerator = d3.pie().value((d) => d.value);
 let arcData = sliceGenerator(data);
 
 // Turn each slice's angles into an SVG path string
