@@ -61,3 +61,6 @@ data.forEach((d, idx) => {
     .attr('style', `--color:${colors(idx)}`)
     .html(`<span class="swatch"></span> ${d.label} <em>(${d.value})</em>`);
 });
+
+// Holds what the user has typed in the search bar (empty means show everything)
+let query = '';

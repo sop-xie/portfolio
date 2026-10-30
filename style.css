@@ -376,6 +376,20 @@ h6 {
   gap: 0.5em;
 }
 
+.searchBar {
+  /* Full width on its own line; border-box counts the padding and border
+     inside that width, so it doesn't stick out past the page edge */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5em 1em;
+  /* Purple outline, with the same rounded corners as the legend card */
+  border: 1px solid var(--color-accent);
+  border-radius: 0.75em;
+  /* Space between the search bar and the project cards */
+  margin-block-end: 2em;
+}
+
 .swatch {
   /* A <span> ignores width and height unless it's made a block of some kind */
   display: inline-block;
