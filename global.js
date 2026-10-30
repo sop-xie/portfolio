@@ -143,10 +143,15 @@ export function renderProjects(projects, containerElement, headingLevel = 'h2') 
   for (let project of projects) {
     let article = document.createElement('article');
 
+    // Description and year share one <div> so they fill the card's 3rd grid row
+    // together; as separate elements they would need a 4th row
     article.innerHTML = `
       <${headingLevel}>${project.title}</${headingLevel}>
       <img src="${project.image}" alt="${project.title}">
-      <p>${project.description}</p>
+      <div>
+        <p>${project.description}</p>
+        <p class="project-year">${project.year}</p>
+      </div>
     `;
 
     containerElement.appendChild(article);
