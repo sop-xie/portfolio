@@ -340,3 +340,36 @@ h6 {
   /* Don't clip anything that is drawn past the edge of the viewBox */
   overflow: visible;
 }
+
+.legend {
+  /* As many columns as fit, each at least 9em wide */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
+  gap: 1em;
+  /* Lists have default bullets and indentation we don't want here */
+  list-style: none;
+  margin-block: 2em;
+  padding: 1em;
+  /* Same tinted, rounded card as the GitHub stats */
+  border-radius: 0.75em;
+  background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
+}
+
+.legend-item {
+  /* Keep the swatch and text on one line, vertically centered */
+  display: flex;
+  align-items: center;
+  /* Smaller than the legend's gap, so a swatch reads as part of its own label */
+  gap: 0.5em;
+}
+
+.swatch {
+  /* A <span> ignores width and height unless it's made a block of some kind */
+  display: inline-block;
+  width: 1em;
+  aspect-ratio: 1 / 1;
+  /* 50% rounding turns the square into a circle */
+  border-radius: 50%;
+  /* The slice's color, set on the parent <li> in projects.js */
+  background-color: var(--color);
+}
