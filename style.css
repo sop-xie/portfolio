@@ -341,7 +341,20 @@ h6 {
   overflow: visible;
 }
 
+.container {
+  /* Put the pie chart and legend side by side, centered against each other */
+  display: flex;
+  align-items: center;
+  gap: 2em;
+  /* Let the legend drop below the pie when there isn't room for both */
+  flex-wrap: wrap;
+}
+
 .legend {
+  /* Take all the width the pie chart doesn't need, but never get
+     squeezed narrower than 15em (that's when it wraps instead) */
+  flex: 1;
+  min-width: 15em;
   /* As many columns as fit, each at least 9em wide */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
