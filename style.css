@@ -136,13 +136,11 @@ h6 {
 }
 
 .project-year {
-  /* Small gray label with spaced-out letters, like the GitHub stat labels,
-     but bold so it stands out under the description */
+  /* Bold accent color, like the GitHub stat numbers, so it stands out
+     under the description in both light and dark mode */
   margin: 0;
-  font-size: 0.8em;
   font-weight: bold;
-  letter-spacing: 0.08em;
-  color: oklch(50% 3% 300);
+  color: var(--color-accent-dark);
 }
 
 .section-title {
@@ -330,4 +328,15 @@ h6 {
 .color-scheme select {
   /* Softer, rounder corners on the dropdown */
   border-radius: 0.5em;
+}
+
+/* ---------- Projects pie chart ---------- */
+
+#projects-pie-plot {
+  /* Without a limit, the SVG would fill the full width of the page */
+  max-width: 20em;
+  /* Space above and below the chart */
+  margin-block: 2em;
+  /* Don't clip anything that is drawn past the edge of the viewBox */
+  overflow: visible;
 }
