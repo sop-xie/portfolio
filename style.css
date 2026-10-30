@@ -358,9 +358,9 @@ h6 {
 }
 
 .selected {
-  /* Vivid violet stands out from the pastel slices. !important is needed to
+  /* Bright violet stands out from the muted slices. !important is needed to
      beat the --color set in the legend item's style attribute */
-  --color: #6a2cff !important;
+  --color: #9650ff !important;
 
   /* Slices get their color from fill, so point that at --color too.
      Legend swatches already read --color, so they need nothing extra */

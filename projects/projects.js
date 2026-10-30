@@ -24,12 +24,12 @@ let sliceGenerator = d3.pie().value((d) => d.value);
 // A color scale: a function that takes a label and returns a color from this list.
 // It remembers which color each label got, so a year keeps its color when searching
 let colors = d3.scaleOrdinal([
-  '#cfb4ff', // lavender
-  '#ec8ccb', // pink
-  '#797bd2', // periwinkle
-  '#3cafc4', // teal-blue
-  '#9459a5', // plum
-  '#b8d4f5', // pale sky blue
+  '#ccb8f1', // lavender
+  '#df97c5', // pink
+  '#7c7fc0', // periwinkle
+  '#5fabbb', // teal-blue
+  '#8d6199', // plum
+  '#bed3ec', // pale sky blue
 ]);
 
 // Which slice is selected; -1 is the convention for "none"
