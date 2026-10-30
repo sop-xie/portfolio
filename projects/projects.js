@@ -32,6 +32,9 @@ let colors = d3.scaleOrdinal([
   '#b8d4f5', // pale sky blue
 ]);
 
+// Which slice is selected; -1 is the convention for "none"
+let selectedIndex = -1;
+
 // Draw the pie chart and legend for whichever projects are passed in
 function renderPieChart(projectsGiven) {
   // Group the projects by year and count each group, giving [[year, count], ...]
@@ -59,7 +62,24 @@ function renderPieChart(projectsGiven) {
 
   // Add one <path> per slice to the chart, each with its own color
   arcs.forEach((arc, idx) => {
-    svg.append('path').attr('d', arc).attr('fill', colors(data[idx].label));
+    svg
+      .append('path')
+      .attr('d', arc)
+      .attr('fill', colors(data[idx].label))
+      .on('click', () => {
+        // Clicking the selected slice deselects it; any other slice becomes selected
+        selectedIndex = selectedIndex === idx ? -1 : idx;
+
+        // Paths and legend items are in the same order, so the same index marks both
+        svg
+          .selectAll('path')
+          .attr('class', (_, i) => (i === selectedIndex ? 'selected' : null));
+        legend
+          .selectAll('li')
+          .attr('class', (_, i) =>
+            i === selectedIndex ? 'legend-item selected' : 'legend-item',
+          );
+      });
   });
 
   // Add one <li> per slice to the legend; --color hands the slice's color to the CSS

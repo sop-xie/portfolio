@@ -340,9 +340,11 @@ h6 {
   /* Don't clip anything that is drawn past the edge of the viewBox */
   overflow: visible;
 
-  /* Animate changes to the slices instead of snapping between them */
   path {
+    /* Animate changes to the slices instead of snapping between them */
     transition: 300ms;
+    /* Show that slices can be clicked */
+    cursor: pointer;
   }
 
   /* While the mouse is on a slice, fade out all the other slices.
@@ -352,6 +354,18 @@ h6 {
     path:not(:hover) {
       opacity: 0.5;
     }
+  }
+}
+
+.selected {
+  /* Vivid violet stands out from the pastel slices. !important is needed to
+     beat the --color set in the legend item's style attribute */
+  --color: #6a2cff !important;
+
+  /* Slices get their color from fill, so point that at --color too.
+     Legend swatches already read --color, so they need nothing extra */
+  &:is(path) {
+    fill: var(--color);
   }
 }
 
