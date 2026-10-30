@@ -339,6 +339,20 @@ h6 {
   margin-block: 2em;
   /* Don't clip anything that is drawn past the edge of the viewBox */
   overflow: visible;
+
+  /* Animate changes to the slices instead of snapping between them */
+  path {
+    transition: 300ms;
+  }
+
+  /* While the mouse is on a slice, fade out all the other slices.
+     :has() checks for a hovered slice, so the corners of the SVG around
+     the circle don't count as hovering */
+  &:has(path:hover) {
+    path:not(:hover) {
+      opacity: 0.5;
+    }
+  }
 }
 
 .container {
