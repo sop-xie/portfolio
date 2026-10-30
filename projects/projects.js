@@ -42,6 +42,7 @@ let colors = d3.scaleOrdinal([
   '#797bd2', // periwinkle
   '#3cafc4', // teal-blue
   '#9459a5', // plum
+  '#b8d4f5', // pale sky blue
 ]);
 
 // Add one <path> per slice to the chart, each with its own color
