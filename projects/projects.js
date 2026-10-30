@@ -7,8 +7,6 @@ const projects = await fetchJSON('../lib/projects.json');
 // The element the project articles will be rendered into
 const projectsContainer = document.querySelector('.projects');
 
-renderProjects(projects, projectsContainer, 'h2');
-
 // Show how many projects there are in the page heading
 const projectsTitle = document.querySelector('.projects-title');
 projectsTitle.textContent = `${projects.length} Projects`;
@@ -32,8 +30,12 @@ let colors = d3.scaleOrdinal([
   '#bed3ec', // pale sky blue
 ]);
 
-// Which slice is selected; -1 is the convention for "none"
-let selectedIndex = -1;
+// Holds what the user has typed in the search bar (empty means show everything)
+let query = '';
+
+// Which year's slice is selected (null means none). This stores the year rather
+// than an index, because a slice's position changes when a search removes others
+let selectedYear = null;
 
 // Draw the pie chart and legend for whichever projects are passed in
 function renderPieChart(projectsGiven) {
@@ -66,30 +68,11 @@ function renderPieChart(projectsGiven) {
       .append('path')
       .attr('d', arc)
       .attr('fill', colors(data[idx].label))
+      .attr('class', data[idx].label === selectedYear ? 'selected' : null)
       .on('click', () => {
         // Clicking the selected slice deselects it; any other slice becomes selected
-        selectedIndex = selectedIndex === idx ? -1 : idx;
-
-        // Paths and legend items are in the same order, so the same index marks both
-        svg
-          .selectAll('path')
-          .attr('class', (_, i) => (i === selectedIndex ? 'selected' : null));
-        legend
-          .selectAll('li')
-          .attr('class', (_, i) =>
-            i === selectedIndex ? 'legend-item selected' : 'legend-item',
-          );
-
-        // Show every project if nothing is selected, or just the selected year's
-        if (selectedIndex === -1) {
-          renderProjects(projects, projectsContainer, 'h2');
-        } else {
-          let selectedYear = data[selectedIndex].label;
-          let yearProjects = projects.filter(
-            (project) => project.year === selectedYear,
-          );
-          renderProjects(yearProjects, projectsContainer, 'h2');
-        }
+        selectedYear = selectedYear === data[idx].label ? null : data[idx].label;
+        updatePage();
       });
   });
 
@@ -97,17 +80,39 @@ function renderPieChart(projectsGiven) {
   data.forEach((d) => {
     legend
       .append('li')
-      .attr('class', 'legend-item')
+      .attr('class', d.label === selectedYear ? 'legend-item selected' : 'legend-item')
       .attr('style', `--color:${colors(d.label)}`)
       .html(`<span class="swatch"></span> ${d.label} <em>(${d.value})</em>`);
   });
 }
 
-// Draw the chart for all the projects when the page first loads
-renderPieChart(projects);
+// Apply both filters and redraw; the search and the pie clicks both end up here,
+// so neither one can undo the other
+function updatePage() {
+  // Keep only the projects with the query in any field, ignoring upper/lower case
+  let searchedProjects = projects.filter((project) => {
+    let values = Object.values(project).join('\n').toLowerCase();
+    return values.includes(query.toLowerCase());
+  });
 
-// Holds what the user has typed in the search bar (empty means show everything)
-let query = '';
+  // If the search removed the selected year's slice, there's nothing left to select
+  if (!searchedProjects.some((project) => project.year === selectedYear)) {
+    selectedYear = null;
+  }
+
+  // The cards also have to match the selected year, if there is one
+  let visibleProjects = searchedProjects.filter(
+    (project) => selectedYear === null || project.year === selectedYear,
+  );
+
+  renderProjects(visibleProjects, projectsContainer, 'h2');
+
+  // The pie only uses the search, so the other years stay clickable
+  renderPieChart(searchedProjects);
+}
+
+// Draw everything when the page first loads
+updatePage();
 
 let searchInput = document.querySelector('.searchBar');
 
@@ -115,14 +120,5 @@ let searchInput = document.querySelector('.searchBar');
 searchInput.addEventListener('input', (event) => {
   // Remember the current search text
   query = event.target.value;
-
-  // Keep only the projects with that text in any field, ignoring upper/lower case
-  let filteredProjects = projects.filter((project) => {
-    let values = Object.values(project).join('\n').toLowerCase();
-    return values.includes(query.toLowerCase());
-  });
-
-  // Redraw the project list, chart and legend with just those projects
-  renderProjects(filteredProjects, projectsContainer, 'h2');
-  renderPieChart(filteredProjects);
+  updatePage();
 });
