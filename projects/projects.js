@@ -17,11 +17,19 @@ projectsTitle.textContent = `${projects.length} Projects`;
 // inner radius 0 means a solid shape (anything bigger would make a donut)
 let arcGenerator = d3.arc().innerRadius(0).outerRadius(50);
 
-// Angles are in radians, so 0 to 2π is a full circle
-let arc = arcGenerator({
-  startAngle: 0,
-  endAngle: 2 * Math.PI,
-});
+// The numbers the pie chart represents (1 out of 3, and 2 out of 3)
+let data = [1, 2];
 
-// Add the generated path to the chart
-d3.select('svg').append('path').attr('d', arc).attr('fill', 'red');
+// d3.pie() works out each slice's start and end angles from the data
+let sliceGenerator = d3.pie();
+let arcData = sliceGenerator(data);
+
+// Turn each slice's angles into an SVG path string
+let arcs = arcData.map((d) => arcGenerator(d));
+
+let colors = ['gold', 'purple'];
+
+// Add one <path> per slice to the chart, each with its own color
+arcs.forEach((arc, idx) => {
+  d3.select('svg').append('path').attr('d', arc).attr('fill', colors[idx]);
+});
