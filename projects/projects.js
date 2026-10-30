@@ -79,6 +79,17 @@ function renderPieChart(projectsGiven) {
           .attr('class', (_, i) =>
             i === selectedIndex ? 'legend-item selected' : 'legend-item',
           );
+
+        // Show every project if nothing is selected, or just the selected year's
+        if (selectedIndex === -1) {
+          renderProjects(projects, projectsContainer, 'h2');
+        } else {
+          let selectedYear = data[selectedIndex].label;
+          let yearProjects = projects.filter(
+            (project) => project.year === selectedYear,
+          );
+          renderProjects(yearProjects, projectsContainer, 'h2');
+        }
       });
   });
 
