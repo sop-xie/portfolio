@@ -37,11 +37,11 @@ let arcs = arcData.map((d) => arcGenerator(d));
 
 // A color scale: a function that takes an index and returns a color from this list
 let colors = d3.scaleOrdinal([
-  '#a06ee8', // lavender
-  '#d84fb0', // magenta-pink
-  '#5144c8', // indigo
-  '#17a2b8', // teal-blue
-  '#8e2fa8', // deep plum
+  '#cfb4ff', // lavender
+  '#ec8ccb', // pink
+  '#797bd2', // periwinkle
+  '#3cafc4', // teal-blue
+  '#9459a5', // plum
 ]);
 
 // Add one <path> per slice to the chart, each with its own color
