@@ -60,10 +60,11 @@ function renderCommitInfo(data, commits) {
 
   // each stat is a <div> holding its <dt> label and <dd> value,
   // so CSS can style every pair as one card (same as the homepage)
-  function addStat(labelHtml, valueHtml) {
+  // optional className lets one value be styled differently (e.g. smaller text)
+  function addStat(labelHtml, valueHtml, className = null) {
     const card = dl.append('div');
     card.append('dt').html(labelHtml);
-    card.append('dd').html(valueHtml);
+    card.append('dd').attr('class', className).html(valueHtml);
   }
 
   // total lines of code = number of rows in the CSV
@@ -82,7 +83,12 @@ function renderCommitInfo(data, commits) {
 
   // longest file: the [file, lineCount] pair with the most lines
   const [longestFile, longestFileLines] = d3.greatest(fileLengths, (d) => d[1]);
-  addStat('Longest file', `${longestFile}<small>${longestFileLines} lines</small>`);
+  // filenames are much wider than numbers, so this value gets smaller text
+  addStat(
+    'Longest file',
+    `${longestFile}<small>${longestFileLines} lines</small>`,
+    'text-value',
+  );
 
   // average and longest line length, in characters
   addStat('Avg line length', d3.mean(data, (d) => d.length).toFixed(1));

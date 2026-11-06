@@ -186,11 +186,20 @@ dl.stats dd {
   color: var(--color-accent-dark);
 }
 
+dl.stats dd.text-value {
+  /* Words (like a filename) are wider than numbers, so shrink them to fit the card */
+  font-size: 130%;
+  /* Safety net: if a future filename is still too long, wrap it instead of spilling out */
+  overflow-wrap: anywhere;
+}
+
 dl.stats dd small {
   /* Extra detail under a value (e.g. the longest file's line count):
-     back to normal size and weight so it reads as a note, not a stat */
+     back to normal size and weight so it reads as a note, not a stat.
+     rem = relative to the page's base font, so it stays the same size
+     no matter how big the value above it is */
   display: block;
-  font-size: 0.4em;
+  font-size: 0.8rem;
   font-weight: normal;
 }
 
@@ -481,6 +490,10 @@ dl.stats dd small {
 .dots circle:hover {
   /* Hovered dot grows to 1.5x so you can see which one the tooltip is about */
   transform: scale(1.5);
+  /* Gray outline (same gray as the labels) marks the hovered dot; fill stays purple */
+  stroke: oklch(50% 3% 300);
+  /* Gets scaled 1.5x along with the dot, so it shows up about 2px wide */
+  stroke-width: 1.5;
 }
 
 /* Reusable label/value list: labels in column 1, values in column 2 */
@@ -522,9 +535,8 @@ dl.info[hidden]:not(:hover, :focus-within) {
   position: fixed;
   top: 1em;
   left: 1em;
-  /* Frosted glass: the page background, 25% see-through, blurring what's behind */
-  background-color: color-mix(in oklch, canvas, transparent 25%);
-  backdrop-filter: blur(8px);
+  /* Same lavender tint as the stat cards, so it looks like part of the site */
+  background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
   /* Subtle shadow so it looks raised off the page */
   box-shadow: 0 0.25em 1em oklch(0% 0 0 / 15%);
   border-radius: 0.75em;
