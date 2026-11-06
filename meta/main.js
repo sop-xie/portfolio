@@ -54,8 +54,51 @@ function processCommits(data) {
     });
 }
 
+// Step 1.3: show summary stats as a <dl> of cards
+function renderCommitInfo(data, commits) {
+  const dl = d3.select('#stats').append('dl').attr('class', 'stats');
+
+  // each stat is a <div> holding its <dt> label and <dd> value,
+  // so CSS can style every pair as one card (same as the homepage)
+  function addStat(labelHtml, valueHtml) {
+    const card = dl.append('div');
+    card.append('dt').html(labelHtml);
+    card.append('dd').html(valueHtml);
+  }
+
+  // total lines of code = number of rows in the CSV
+  addStat('Total <abbr title="Lines of code">LOC</abbr>', data.length);
+
+  // total commits = number of groups we made in processCommits
+  addStat('Total commits', commits.length);
+
+  // number of files: group lines by file, count the groups
+  const fileLengths = d3.rollups(
+    data,
+    (v) => v.length, // lines per file
+    (d) => d.file,
+  ); // [[file, lineCount], ...]
+  addStat('Files', fileLengths.length);
+
+  // longest file: the [file, lineCount] pair with the most lines
+  const [longestFile, longestFileLines] = d3.greatest(fileLengths, (d) => d[1]);
+  addStat('Longest file', `${longestFile}<small>${longestFileLines} lines</small>`);
+
+  // average and longest line length, in characters
+  addStat('Avg line length', d3.mean(data, (d) => d.length).toFixed(1));
+  addStat('Longest line', d3.max(data, (d) => d.length));
+
+  // busiest day: count commits per weekday, keep the day with the most
+  const workByDay = d3.rollups(
+    commits,
+    (v) => v.length,
+    (d) => d.datetime.toLocaleString('en', { weekday: 'long' }),
+  );
+  const [busiestDay] = d3.greatest(workByDay, (d) => d[1]);
+  addStat('Busiest day', busiestDay);
+}
+
 let data = await loadData();
 let commits = processCommits(data);
 
-// temporary: check the commits array in the browser console (removed in Step 1.3)
-console.log(commits);
+renderCommitInfo(data, commits);

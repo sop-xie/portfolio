@@ -148,7 +148,9 @@ h6 {
   font-size: 200%;
 }
 
-#profile-stats dl {
+/* Stat cards: shared by the homepage GitHub stats and the Meta page (.stats) */
+#profile-stats dl,
+dl.stats {
   /* Up to 4 equal columns, wrapping to fewer on narrow screens */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(8em, 1fr));
@@ -156,7 +158,8 @@ h6 {
   margin: 0;
 }
 
-#profile-stats dl div {
+#profile-stats dl div,
+dl.stats div {
   /* Each label + number pair is its own tinted, rounded card */
   padding: 0.75em 1em;
   border-radius: 0.75em;
@@ -165,7 +168,8 @@ h6 {
   background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
 }
 
-#profile-stats dt {
+#profile-stats dt,
+dl.stats dt {
   /* Small uppercase label, like the resume section names */
   font-size: 0.8em;
   text-transform: uppercase;
@@ -173,12 +177,21 @@ h6 {
   color: oklch(50% 3% 300);
 }
 
-#profile-stats dd {
+#profile-stats dd,
+dl.stats dd {
   /* Big accent-colored number; dd has a default left margin we don't want */
   margin: 0;
   font-size: 200%;
   font-weight: bold;
   color: var(--color-accent-dark);
+}
+
+dl.stats dd small {
+  /* Extra detail under a value (e.g. the longest file's line count):
+     back to normal size and weight so it reads as a note, not a stat */
+  display: block;
+  font-size: 0.4em;
+  font-weight: normal;
 }
 
 .intro {
