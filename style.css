@@ -469,3 +469,66 @@ dl.stats dd small {
   /* Hide the gridline "axis" spine; the real y-axis already draws one */
   display: none;
 }
+
+.dots circle {
+  /* Animate size changes over 200ms instead of jumping */
+  transition: 200ms;
+  /* Grow from the dot's own center, not the SVG's top-left corner */
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.dots circle:hover {
+  /* Hovered dot grows to 1.5x so you can see which one the tooltip is about */
+  transform: scale(1.5);
+}
+
+/* Reusable label/value list: labels in column 1, values in column 2 */
+dl.info {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25em 1em;
+  margin: 0;
+  /* Fade in/out (used together with the [hidden] rule below) */
+  transition-duration: 500ms;
+  transition-property: opacity, visibility;
+}
+
+dl.info dt {
+  /* Same small uppercase gray labels as the stat cards, so values stand out */
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: oklch(50% 3% 300);
+  /* Line the smaller label up with the middle of its value */
+  align-self: center;
+}
+
+dl.info dd {
+  /* Remove the browser's default left indent on <dd> */
+  margin: 0;
+}
+
+dl.info[hidden]:not(:hover, :focus-within) {
+  /* Instead of vanishing instantly, fade out; stays visible if you move
+     onto the tooltip itself (e.g. to click the commit link) */
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Floating box; JS moves it to the mouse with left/top */
+.tooltip {
+  /* Relative to the window, so it stays put while the page scrolls */
+  position: fixed;
+  top: 1em;
+  left: 1em;
+  /* Frosted glass: the page background, 25% see-through, blurring what's behind */
+  background-color: color-mix(in oklch, canvas, transparent 25%);
+  backdrop-filter: blur(8px);
+  /* Subtle shadow so it looks raised off the page */
+  box-shadow: 0 0.25em 1em oklch(0% 0 0 / 15%);
+  border-radius: 0.75em;
+  padding: 0.75em 1em;
+  /* Keep it above the chart and the nav */
+  z-index: 10;
+}

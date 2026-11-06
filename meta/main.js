@@ -152,7 +152,16 @@ function renderScatterPlot(data, commits) {
     .join('circle')
     .attr('cx', (d) => xScale(d.datetime))
     .attr('cy', (d) => yScale(d.hourFrac))
-    .attr('r', 5); // fill color is set in style.css
+    .attr('r', 5) // fill color is set in style.css
+    // Step 3: show the tooltip while the mouse is over a dot
+    .on('mouseenter', (event, commit) => {
+      renderTooltipContent(commit);
+      updateTooltipVisibility(true);
+      updateTooltipPosition(event);
+    })
+    .on('mouseleave', () => {
+      updateTooltipVisibility(false);
+    });
 
   // Step 2.2: axes (drawn last so they sit on top)
   const xAxis = d3.axisBottom(xScale);
@@ -170,6 +179,43 @@ function renderScatterPlot(data, commits) {
     .append('g')
     .attr('transform', `translate(${usableArea.left}, 0)`)
     .call(yAxis);
+}
+
+// Step 3.1: fill the tooltip with one commit's info
+function renderTooltipContent(commit) {
+  // nothing to show (e.g. an empty object), so leave the tooltip as is
+  if (Object.keys(commit).length === 0) return;
+
+  const link = document.getElementById('commit-link');
+  const date = document.getElementById('commit-date');
+  const time = document.getElementById('commit-time');
+  const author = document.getElementById('commit-author');
+  const lines = document.getElementById('commit-lines');
+
+  link.href = commit.url;
+  link.textContent = commit.id;
+  // e.g. "Friday, October 2, 2026"
+  date.textContent = commit.datetime?.toLocaleString('en', { dateStyle: 'full' });
+  // e.g. "8:21 PM"
+  time.textContent = commit.datetime?.toLocaleString('en', { timeStyle: 'short' });
+  author.textContent = commit.author;
+  lines.textContent = commit.totalLines;
+}
+
+// Step 3.3: show/hide the tooltip with the HTML `hidden` attribute
+// (CSS fades it in and out instead of popping)
+function updateTooltipVisibility(isVisible) {
+  const tooltip = document.getElementById('commit-tooltip');
+  tooltip.hidden = !isVisible;
+}
+
+// Step 3.4: move the tooltip to the mouse. clientX/clientY are measured from
+// the top-left of the window, which matches the tooltip's position: fixed
+function updateTooltipPosition(event) {
+  const tooltip = document.getElementById('commit-tooltip');
+  // small offset so the tooltip sits beside the cursor instead of under it
+  tooltip.style.left = `${event.clientX + 12}px`;
+  tooltip.style.top = `${event.clientY + 12}px`;
 }
 
 let data = await loadData();
