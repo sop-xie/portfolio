@@ -452,3 +452,20 @@ dl.stats dd small {
   /* The slice's color, set on the parent <li> in projects.js */
   background-color: var(--color);
 }
+
+/* Meta page scatterplot */
+.dots circle {
+  /* Commit dots use the site accent, same purple as the cards and links */
+  fill: var(--color-accent);
+}
+
+.gridlines .tick line {
+  /* Faint gray so the lines help you read times without competing with the dots */
+  stroke: oklch(50% 3% 300);
+  stroke-opacity: 0.2;
+}
+
+.gridlines .domain {
+  /* Hide the gridline "axis" spine; the real y-axis already draws one */
+  display: none;
+}
