@@ -111,8 +111,9 @@ function renderScatterPlot(data, commits) {
   const height = 600;
 
   // Room around the plot for the axes (left is a bit wider than the lab's 20
-  // so the "00:00" labels fit inside the SVG instead of hanging off the edge)
-  const margin = { top: 10, right: 10, bottom: 30, left: 40 };
+  // so the "00:00" labels fit inside the SVG instead of hanging off the edge;
+  // bottom is taller than the lab's 30 to fit the lowered month labels)
+  const margin = { top: 10, right: 10, bottom: 40, left: 40 };
   const usableArea = {
     top: margin.top,
     right: width - margin.right,
@@ -150,15 +151,25 @@ function renderScatterPlot(data, commits) {
     .attr('transform', `translate(${usableArea.left}, 0)`);
   gridlines.call(d3.axisLeft(yScale).tickFormat('').tickSize(-usableArea.width));
 
+  // Step 4.1/4.2: dot size shows how many lines the commit contributed.
+  // scaleSqrt makes the circle's AREA (not radius) proportional to lines,
+  // so a commit with 2x the lines looks 2x as big, not 4x
+  const [minLines, maxLines] = d3.extent(commits, (d) => d.totalLines);
+  const rScale = d3.scaleSqrt().domain([minLines, maxLines]).range([3, 20]);
+
+  // Step 4.3: draw the biggest commits first so smaller dots end up on top
+  // and can still be hovered (the minus sign sorts largest -> smallest)
+  const sortedCommits = d3.sort(commits, (d) => -d.totalLines);
+
   // Step 2.1: one circle per commit
   const dots = svg.append('g').attr('class', 'dots');
   dots
     .selectAll('circle')
-    .data(commits)
+    .data(sortedCommits)
     .join('circle')
     .attr('cx', (d) => xScale(d.datetime))
     .attr('cy', (d) => yScale(d.hourFrac))
-    .attr('r', 5) // fill color is set in style.css
+    .attr('r', (d) => rScale(d.totalLines)) // fill and opacity are set in style.css
     // Step 3: show the tooltip while the mouse is over a dot
     .on('mouseenter', (event, commit) => {
       renderTooltipContent(commit);
@@ -176,10 +187,22 @@ function renderScatterPlot(data, commits) {
     .axisLeft(yScale)
     .tickFormat((d) => String(d % 24).padStart(2, '0') + ':00');
 
-  svg
+  const xAxisGroup = svg
     .append('g')
     .attr('transform', `translate(0, ${usableArea.bottom})`)
     .call(xAxis);
+
+  // Month ticks (e.g. "November") would collide with the day labels next to
+  // them, so give them a longer tick line and drop their label below the days.
+  // A tick is a month start if rounding it down to its month changes nothing
+  xAxisGroup
+    .selectAll('.tick')
+    .filter((d) => +d3.timeMonth(d) === +d)
+    .classed('month-tick', true) // bold text, set in style.css
+    .call((tick) => {
+      tick.select('line').attr('y2', 18); // normal ticks are 6 long
+      tick.select('text').attr('y', 21); // normal labels sit at 9
+    });
 
   svg
     .append('g')

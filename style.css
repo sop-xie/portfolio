@@ -466,6 +466,8 @@ dl.stats dd small {
 .dots circle {
   /* Commit dots use the site accent, same purple as the cards and links */
   fill: var(--color-accent);
+  /* 70% opaque so overlapping dots show through each other */
+  fill-opacity: 0.7;
 }
 
 .gridlines .tick line {
@@ -490,6 +492,8 @@ dl.stats dd small {
 .dots circle:hover {
   /* Hovered dot grows to 1.5x so you can see which one the tooltip is about */
   transform: scale(1.5);
+  /* Fully solid while hovered, so it stands out from the see-through dots */
+  fill-opacity: 1;
   /* Gray outline (same gray as the labels) marks the hovered dot; fill stays purple */
   stroke: oklch(50% 3% 300);
   /* Gets scaled 1.5x along with the dot, so it shows up about 2px wide */
@@ -543,4 +547,9 @@ dl.info[hidden]:not(:hover, :focus-within) {
   padding: 0.75em 1em;
   /* Keep it above the chart and the nav */
   z-index: 10;
+}
+
+.month-tick text {
+  /* Month names ("October", "November") stand out from the day labels */
+  font-weight: bold;
 }
