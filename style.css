@@ -586,3 +586,38 @@ dl.info[hidden]:not(:hover, :focus-within) {
   /* Month names ("October", "November") stand out from the day labels */
   font-weight: bold;
 }
+
+.dots circle.selected {
+  /* Brushed dots: same bright violet + text-color border as the selected
+     pie slice on the Projects page (white in dark mode, black in light) */
+  fill: #9650ff;
+  fill-opacity: 1;
+  stroke: canvastext;
+  stroke-width: 1.5;
+}
+
+/* Brush box: animated dashed outline ("marching ants") */
+@keyframes marching-ants {
+  to {
+    /* Shift the dashes by one dash + gap (5 + 3) so the loop is seamless */
+    stroke-dashoffset: -8;
+  }
+}
+
+#chart .selection {
+  /* Faint purple tint inside the box (overrides D3's default gray) */
+  fill: var(--color-accent);
+  fill-opacity: 0.1;
+  /* Outline in the text color, so it shows in both light and dark mode */
+  stroke: canvastext;
+  stroke-opacity: 0.7;
+  /* 5-unit dashes with 3-unit gaps, sliding along forever */
+  stroke-dasharray: 5 3;
+  animation: marching-ants 2s linear infinite;
+}
+
+#language-breakdown {
+  /* Only a few languages, so let the cards share the row evenly instead of
+     using the 7-column layout of the stats at the top */
+  grid-template-columns: repeat(auto-fit, minmax(8em, 1fr));
+}

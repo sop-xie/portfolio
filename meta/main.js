@@ -131,14 +131,15 @@ function renderScatterPlot(data, commits) {
 
   // Step 2.1: scales turn data values into pixel positions
   // x: time scale from the earliest to latest commit, rounded out to nice dates
-  const xScale = d3
+  // (assigned to the global xScale/yScale so brushing can use them too)
+  xScale = d3
     .scaleTime()
     .domain(d3.extent(commits, (d) => d.datetime))
     .range([usableArea.left, usableArea.right])
     .nice();
 
   // y: hours 0–24, flipped (bottom = midnight) because SVG y grows downward
-  const yScale = d3
+  yScale = d3
     .scaleLinear()
     .domain([0, 24])
     .range([usableArea.bottom, usableArea.top]);
@@ -208,7 +209,107 @@ function renderScatterPlot(data, commits) {
     .append('g')
     .attr('transform', `translate(${usableArea.left}, 0)`)
     .call(yAxis);
+
+  // Step 5.1: add brushing once everything else is drawn
+  createBrushSelector(svg);
 }
+
+// Step 5.1: let the user drag a rectangle over the chart to select commits
+function createBrushSelector(svg) {
+  // d3.brush() adds an invisible "overlay" rect that catches drags, plus a
+  // "selection" rect that shows the box. 'start brush end' = call brushed
+  // when a drag starts, on every move, and when it's released
+  svg.call(d3.brush().on('start brush end', brushed));
+
+  // Step 5.2: the overlay was added last, so it sits on top and blocks hover
+  // on the dots. raise() moves the dots (and the brush's own selection box and
+  // handles, which come after the overlay: "~" = later siblings) to the end,
+  // so they're drawn on top of the overlay again
+  svg.selectAll('.dots, .overlay ~ *').raise();
+}
+
+// Step 5.4: runs every time the brush box changes
+function brushed(event) {
+  // [[x0, y0], [x1, y1]] corners of the box in SVG units, or null if cleared
+  const selection = event.selection;
+  d3.selectAll('.dots circle').classed('selected', (d) =>
+    isCommitSelected(selection, d),
+  );
+  renderSelectionCount(selection);
+  renderLanguageBreakdown(selection);
+}
+
+// Step 5.4: is this commit's dot inside the brush box?
+function isCommitSelected(selection, commit) {
+  if (!selection) {
+    return false;
+  }
+  // split the two corners into x bounds and y bounds
+  const [x0, x1] = selection.map((d) => d[0]);
+  const [y0, y1] = selection.map((d) => d[1]);
+  // where this commit's dot is drawn, using the same scales as the chart
+  const x = xScale(commit.datetime);
+  const y = yScale(commit.hourFrac);
+  return x >= x0 && x <= x1 && y >= y0 && y <= y1;
+}
+
+// Step 5.5: "N commits selected" under the chart
+function renderSelectionCount(selection) {
+  const selectedCommits = selection
+    ? commits.filter((d) => isCommitSelected(selection, d))
+    : [];
+
+  const countElement = document.querySelector('#selection-count');
+  const n = selectedCommits.length;
+  // "No commits", "1 commit", "12 commits"
+  countElement.textContent = `${n || 'No'} commit${n === 1 ? '' : 's'} selected`;
+
+  return selectedCommits;
+}
+
+// Step 5.6: how many lines of each language the selected commits contributed
+function renderLanguageBreakdown(selection) {
+  const selectedCommits = selection
+    ? commits.filter((d) => isCommitSelected(selection, d))
+    : [];
+  const container = document.getElementById('language-breakdown');
+
+  // nothing selected: show nothing
+  if (selectedCommits.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  // the hidden .lines property from Step 1.2: every line from those commits
+  const lines = selectedCommits.flatMap((d) => d.lines);
+
+  // count lines per language (the CSV's "type" column: css, js, html)
+  const breakdown = d3.rollup(
+    lines,
+    (v) => v.length,
+    (d) => d.type,
+  );
+
+  container.innerHTML = '';
+  for (const [language, count] of breakdown) {
+    const proportion = count / lines.length;
+    // ".1~%" = percent with up to 1 decimal, dropping a trailing ".0"
+    const formatted = d3.format('.1~%')(proportion);
+
+    // each language is a card (div > dt + dd), like the stats at the top
+    container.innerHTML += `
+      <div>
+        <dt>${language}</dt>
+        <dd>${count}<small>lines · ${formatted}</small></dd>
+      </div>
+    `;
+  }
+}
+
+// Step 5.4: scales live out here so isCommitSelected can use them;
+// renderScatterPlot fills them in
+let xScale;
+let yScale;
 
 // Step 3.1: fill the tooltip with one commit's info
 function renderTooltipContent(commit) {
