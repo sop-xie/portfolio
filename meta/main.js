@@ -101,7 +101,7 @@ function renderCommitInfo(data, commits) {
     (d) => d.datetime.toLocaleString('en', { weekday: 'long' }),
   );
   const [busiestDay] = d3.greatest(workByDay, (d) => d[1]);
-  addStat('Busiest day', busiestDay);
+  addStat('Busiest day', busiestDay, 'text-value');
 }
 
 // Step 2: scatterplot of commits, date (x) vs. time of day (y)

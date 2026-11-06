@@ -186,9 +186,42 @@ dl.stats dd {
   color: var(--color-accent-dark);
 }
 
+/* Meta page only: line up every label and every value across a row of cards */
+dl.stats div {
+  /* Each card takes 2 rows of the outer grid (label row + value row) and uses
+     those same rows for its own contents ("subgrid"). So all labels in a row
+     share one height, and all values start on the same line */
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+  /* Space between a label and its value (instead of the outer 1em gap) */
+  row-gap: 0.25em;
+  /* Narrower side padding so 7 cards fit in one row */
+  padding-inline: 0.5em;
+}
+
+dl.stats dt {
+  /* One-line labels sit at the bottom of the label row, right above their value */
+  align-self: end;
+}
+
+dl.stats dd {
+  /* Center each value in the value row, so smaller text ("Friday")
+     lines up with the middle of the big numbers instead of their top */
+  align-self: center;
+}
+
+@media (min-width: 60em) {
+  /* Wide screens: all 7 cards in one row. Narrower screens keep the
+     wrapping grid from above so cards don't get squeezed too thin */
+  dl.stats {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
 dl.stats dd.text-value {
-  /* Words (like a filename) are wider than numbers, so shrink them to fit the card */
-  font-size: 130%;
+  /* Words (a filename, a weekday) are wider than numbers, so shrink them to fit the card */
+  font-size: 110%;
   /* Safety net: if a future filename is still too long, wrap it instead of spilling out */
   overflow-wrap: anywhere;
 }
