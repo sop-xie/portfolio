@@ -130,6 +130,14 @@ h6 {
   grid-row: span 3;
 }
 
+.projects img {
+  /* Fill the card's width at the placeholder image's 2:1 shape, so every
+     card image is the same size; cover crops any extra instead of squishing */
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+}
+
 .projects :is(h2, h3) {
   /* The grid gap already spaces things out */
   margin: 0;
