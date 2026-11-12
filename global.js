@@ -144,11 +144,23 @@ export function renderProjects(projects, containerElement, headingLevel = 'h2') 
   for (let project of projects) {
     let article = document.createElement('article');
 
+    // Local image paths are relative to the site root, but this function runs on
+    // pages at different depths (home vs. projects/), so prefix BASE_PATH like the nav does
+    let image = project.image;
+    if (!image.startsWith('http')) {
+      image = BASE_PATH + image;
+    }
+
+    // If the project has a url, the title becomes a link to it
+    let title = project.url
+      ? `<a href="${project.url}" target="_blank">${project.title}</a>`
+      : project.title;
+
     // Description and year share one <div> so they fill the card's 3rd grid row
     // together; as separate elements they would need a 4th row
     article.innerHTML = `
-      <${headingLevel}>${project.title}</${headingLevel}>
-      <img src="${project.image}" alt="${project.title}">
+      <${headingLevel}>${title}</${headingLevel}>
+      <img src="${image}" alt="${project.title}">
       <div>
         <p>${project.description}</p>
         <p class="project-year">${project.year}</p>
