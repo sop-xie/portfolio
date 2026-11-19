@@ -503,36 +503,11 @@ dl.stats dd small {
   background-color: var(--color);
 }
 
-/* Meta page time slider (Lab 8 Step 1.1) */
-#time-filter label {
-  /* Label text, slider, and date side by side in one row */
-  display: flex;
-  /* Line them up by their text baselines so the words sit level */
-  align-items: baseline;
-  gap: 1em;
-  /* On narrow screens, let the date drop to its own line instead of overflowing */
-  flex-wrap: wrap;
-}
-
-#time-filter input {
-  /* The slider stretches to fill whatever space is left in the row */
-  flex: 1;
-}
-
-#time-filter time {
-  /* Push the date to the right end of the row */
-  margin-left: auto;
-  /* Fixed width + same-width digits, so the slider doesn't change length
-     (and jump under your cursor) as the date text gets longer or shorter */
-  min-width: 15em;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Meta page scrollytelling layout (Lab 8 Step 3.1) */
-#scrolly-1 {
+/* Meta page scrollytelling layout (Lab 8 Step 3.1; #scrolly-2 added in Step 4) */
+#scrolly-1,
+#scrolly-2 {
   position: relative;
-  /* Story and chart side by side */
+  /* Story and visualization side by side */
   display: flex;
   gap: 1rem;
 
@@ -542,7 +517,14 @@ dl.stats dd small {
   }
 }
 
-#scatter-story {
+#scrolly-2 {
+  /* Step 4: same layout, mirrored. The story is first in the HTML, but
+     row-reverse lays the columns out right to left, so it ends up on the right */
+  flex-direction: row-reverse;
+}
+
+#scatter-story,
+#files-story {
   position: relative;
 }
 
@@ -554,16 +536,31 @@ dl.stats dd small {
 }
 
 #scatter-plot {
-  /* Scrolls normally until its top reaches the top of the screen (top: 0),
-     then stays pinned there while the story column keeps scrolling */
+  /* Scrolls normally until its top reaches 25vh (a quarter of the screen)
+     from the top of the screen, then stays pinned there while the story
+     column keeps scrolling */
   position: sticky;
-  top: 0;
+  /* It's 50vh tall (below), so pinning its top at 25vh leaves 25vh above
+     and 25vh below: centered on the screen instead of touching the top */
+  top: 25vh;
   left: 0;
   bottom: auto;
   /* Required for sticky to work here: flex items stretch to match the
      tallest column (the long story), and an element as tall as its
      container has no room to stick. A fixed height gives it room */
   height: 50vh;
+}
+
+#files-plot {
+  /* Step 4: pinned like the chart while its story scrolls by */
+  position: sticky;
+  /* A gap above it, like the chart. Smaller than the chart's 25vh because the
+     file list is taller and needs more of the screen to fit; raise this if it
+     still has room below, lower it if the bottom files get cut off */
+  top: 10vh;
+  /* Another way to stop the flex stretch (instead of a fixed height):
+     align-self: start keeps it only as tall as its own content */
+  align-self: start;
 }
 
 /* Meta page file list (Lab 8 Step 2.1) */

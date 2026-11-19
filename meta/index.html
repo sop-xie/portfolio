@@ -15,23 +15,13 @@
     <h1>Meta</h1>
     <p>Stats about the code behind this website, computed from its git history.</p>
 
-    <!-- Lab 8 Step 1.1: time slider. 0 = first commit, 100 = latest commit;
-         main.js turns the slider value into a date and shows it in <time> -->
-    <div id="time-filter">
-        <label>
-            Show commits until:
-            <input type="range" id="commit-progress" min="0" max="100" value="100">
-            <time id="commit-time"></time>
-        </label>
-    </div>
-
     <div id="stats"></div>
 
     <h2>Commits by time of day</h2>
 
     <!-- Lab 8 Step 3.1: scrollytelling layout. Two columns side by side:
          story text on the left (scrolls normally), and the chart on the right
-         (sticks to the top of the screen while the story scrolls past) -->
+         (stays pinned in the middle of the screen while the story scrolls past) -->
     <div id="scrolly-1">
         <!-- filled with one paragraph per commit by main.js (Step 3.2) -->
         <div id="scatter-story"></div>
@@ -53,7 +43,19 @@
              <dd>{one <div class="loc"> dot per line}</dd>
          </div>
          Step 3.1: moved below the chart -->
-    <dl id="files"></dl>
+    <h2>Lines of code by file</h2>
+
+    <!-- Lab 8 Step 4: second scrollytelling section, same idea as #scrolly-1.
+         The story comes first in the HTML (so it's read first by screen
+         readers), but CSS flips the columns to put it on the right -->
+    <div id="scrolly-2">
+        <!-- filled with one paragraph per commit by main.js -->
+        <div id="files-story"></div>
+
+        <div id="files-plot">
+            <dl id="files"></dl>
+        </div>
+    </div>
 
     <!-- Tooltip for the hovered commit; filled in and shown by main.js -->
     <dl id="commit-tooltip" class="info tooltip" hidden>
@@ -66,7 +68,8 @@
         <dd id="commit-date"></dd>
 
         <dt>Time</dt>
-        <!-- renamed from "commit-time" in Lab 8: the slider's <time> needs that id -->
+        <!-- renamed from "commit-time" in Lab 8, when the (since removed)
+             time slider needed that id -->
         <dd id="commit-time-of-day"></dd>
 
         <dt>Author</dt>

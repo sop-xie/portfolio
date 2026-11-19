@@ -420,51 +420,20 @@ function updateTooltipPosition(event) {
 let data = await loadData();
 let commits = processCommits(data);
 
-// Lab 8 Step 1.1: the time slider
-// how far along the project's history the slider is, 0–100 (start at the end,
-// so every commit shows until the user drags it)
-let commitProgress = 100;
-
-// a time scale in reverse of the chart's x-scale: it maps dates -> 0–100.
-// timeScale(date) gives a slider value; timeScale.invert(value) gives a date
-let timeScale = d3
-  .scaleTime()
-  .domain([
-    d3.min(commits, (d) => d.datetime),
-    d3.max(commits, (d) => d.datetime),
-  ])
-  .range([0, 100]);
-
-// the latest moment to show commits for
-let commitMaxTime = timeScale.invert(commitProgress);
+// Lab 8: the latest moment to show commits for. Starts at the newest commit
+// (so everything shows on load); scrolling the stories changes it.
+// (Step 4: the Step 1.1 slider that used to set this was removed, since
+// scrolling does the same job)
+let commitMaxTime = d3.max(commits, (d) => d.datetime);
 
 // Step 1.2: the commits made up to commitMaxTime.
-// Starts as all commits; gets updated as the user moves the slider
+// Starts as all commits; gets updated as you scroll
 let filteredCommits = commits;
 
-// runs whenever the slider moves: read its value, convert it to a date,
-// and redraw everything for that date
-function onTimeSliderChange() {
-  const slider = document.getElementById('commit-progress');
-
-  commitProgress = Number(slider.value); // input values are strings
-  commitMaxTime = timeScale.invert(commitProgress);
-
-  updateForMaxTime();
-}
-
 // Lab 8 Step 3.3: everything that depends on commitMaxTime, in one place so
-// both the slider and scrolling (onStepEnter, bottom of file) can use it
+// both scrolling stories (onStepEnter, bottom of file) can use it
 function updateForMaxTime() {
-  const timeElement = document.getElementById('commit-time');
-
-  // e.g. "November 18, 2026 at 3:12 PM"
-  timeElement.textContent = commitMaxTime.toLocaleString('en', {
-    dateStyle: 'long',
-    timeStyle: 'short',
-  });
-
-  // Step 1.2: keep only commits made on or before the slider's date,
+  // Step 1.2: keep only commits made on or before commitMaxTime,
   // then update the chart already on the page (not draw a new one)
   filteredCommits = commits.filter((d) => d.datetime <= commitMaxTime);
   updateScatterPlot(data, filteredCommits);
@@ -537,22 +506,20 @@ let colors = d3
     '#5fabbb', // html: teal-blue
   ]);
 
-// 'input' fires continuously while dragging ('change' only fires on release)
-document
-  .getElementById('commit-progress')
-  .addEventListener('input', onTimeSliderChange);
-
 renderCommitInfo(data, commits);
 renderScatterPlot(data, commits);
 
-// run once on load so the <time> isn't empty before the first drag.
+// run once on load to draw the file list (and sync the chart).
 // Must come after renderScatterPlot: updateScatterPlot needs the chart to exist
-onTimeSliderChange();
+updateForMaxTime();
 
-// Lab 8 Step 3.2: the story. One <div class="step"> per commit, in time order,
-// in the left column. Scrollama (Step 3.3) watches the .step divs to know
-// which commit you've scrolled to
-d3.select('#scatter-story')
+// Lab 8 Step 3.2: the story. One <div class="step"> per commit, in time order.
+// Scrollama (Step 3.3) watches the .step divs to know which commit you've
+// scrolled to.
+// Step 4: two stories now, one beside the chart and one beside the file dots,
+// with the same text. selectAll grabs both containers, and .data(commits)
+// is applied to each one separately, so each gets its own full set of steps
+d3.selectAll('#scatter-story, #files-story')
   .selectAll('.step')
   .data(commits)
   .join('div')
@@ -589,13 +556,6 @@ function onStepEnter(response) {
 
   // show commits up to and including this one
   commitMaxTime = commit.datetime;
-
-  // move the slider to match, so the two controls agree. timeScale turns the
-  // date back into 0–100. (Setting .value from code doesn't fire 'input',
-  // so this won't trigger onTimeSliderChange)
-  commitProgress = timeScale(commitMaxTime);
-  document.getElementById('commit-progress').value = commitProgress;
-
   updateForMaxTime();
 }
 
@@ -604,5 +564,15 @@ scroller
   .setup({
     container: '#scrolly-1', // the section being scrolled through
     step: '#scrolly-1 .step', // the elements that trigger onStepEnter
+  })
+  .onStepEnter(onStepEnter);
+
+// Lab 8 Step 4: a second scroller for the file-dots story. Same handler:
+// it sets commitMaxTime and redraws, so the file dots grow as you scroll
+const scroller2 = scrollama();
+scroller2
+  .setup({
+    container: '#scrolly-2',
+    step: '#scrolly-2 .step',
   })
   .onStepEnter(onStepEnter);
