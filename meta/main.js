@@ -318,7 +318,7 @@ function renderTooltipContent(commit) {
 
   const link = document.getElementById('commit-link');
   const date = document.getElementById('commit-date');
-  const time = document.getElementById('commit-time');
+  const time = document.getElementById('commit-time-of-day');
   const author = document.getElementById('commit-author');
   const lines = document.getElementById('commit-lines');
 
@@ -350,6 +350,48 @@ function updateTooltipPosition(event) {
 
 let data = await loadData();
 let commits = processCommits(data);
+
+// Lab 8 Step 1.1: the time slider
+// how far along the project's history the slider is, 0–100 (start at the end,
+// so every commit shows until the user drags it)
+let commitProgress = 100;
+
+// a time scale in reverse of the chart's x-scale: it maps dates -> 0–100.
+// timeScale(date) gives a slider value; timeScale.invert(value) gives a date
+let timeScale = d3
+  .scaleTime()
+  .domain([
+    d3.min(commits, (d) => d.datetime),
+    d3.max(commits, (d) => d.datetime),
+  ])
+  .range([0, 100]);
+
+// the latest moment to show commits for; later steps filter by this
+let commitMaxTime = timeScale.invert(commitProgress);
+
+// runs whenever the slider moves: read its value, convert it to a date,
+// and show that date next to the slider
+function onTimeSliderChange() {
+  const slider = document.getElementById('commit-progress');
+  const timeElement = document.getElementById('commit-time');
+
+  commitProgress = Number(slider.value); // input values are strings
+  commitMaxTime = timeScale.invert(commitProgress);
+
+  // e.g. "November 18, 2026 at 3:12 PM"
+  timeElement.textContent = commitMaxTime.toLocaleString('en', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+  });
+}
+
+// 'input' fires continuously while dragging ('change' only fires on release)
+document
+  .getElementById('commit-progress')
+  .addEventListener('input', onTimeSliderChange);
+
+// run once on load so the <time> isn't empty before the first drag
+onTimeSliderChange();
 
 renderCommitInfo(data, commits);
 renderScatterPlot(data, commits);

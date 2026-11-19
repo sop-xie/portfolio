@@ -14,6 +14,17 @@
 <body>
     <h1>Meta</h1>
     <p>Stats about the code behind this website, computed from its git history.</p>
+
+    <!-- Lab 8 Step 1.1: time slider. 0 = first commit, 100 = latest commit;
+         main.js turns the slider value into a date and shows it in <time> -->
+    <div id="time-filter">
+        <label>
+            Show commits until:
+            <input type="range" id="commit-progress" min="0" max="100" value="100">
+            <time id="commit-time"></time>
+        </label>
+    </div>
+
     <div id="stats"></div>
 
     <h2>Commits by time of day</h2>
@@ -34,7 +45,8 @@
         <dd id="commit-date"></dd>
 
         <dt>Time</dt>
-        <dd id="commit-time"></dd>
+        <!-- renamed from "commit-time" in Lab 8: the slider's <time> needs that id -->
+        <dd id="commit-time-of-day"></dd>
 
         <dt>Author</dt>
         <dd id="commit-author"></dd>
