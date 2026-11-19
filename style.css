@@ -554,6 +554,14 @@ dl.stats dd small {
   /* Grow from the dot's own center, not the SVG's top-left corner */
   transform-origin: center;
   transform-box: fill-box;
+
+  /* Lab 8 Step 1.4: a new dot has no "before" state to transition from, so it
+     would just pop in. @starting-style gives it one: the browser treats a
+     just-added circle as if it had radius 0, then transitions it up to its
+     real r over the 200ms above, so new dots grow in */
+  @starting-style {
+    r: 0;
+  }
 }
 
 .dots circle:hover {
