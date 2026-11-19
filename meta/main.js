@@ -191,11 +191,27 @@ function renderScatterPlot(data, commits) {
   const xAxisGroup = svg
     .append('g')
     .attr('transform', `translate(0, ${usableArea.bottom})`)
+    // Lab 8 Step 1.2: a class name so updateScatterPlot can find this axis
+    .attr('class', 'x-axis')
     .call(xAxis);
+  styleMonthTicks(xAxisGroup);
 
-  // Month ticks (e.g. "November") would collide with the day labels next to
-  // them, so give them a longer tick line and drop their label below the days.
-  // A tick is a month start if rounding it down to its month changes nothing
+  svg
+    .append('g')
+    .attr('transform', `translate(${usableArea.left}, 0)`)
+    .attr('class', 'y-axis') // not needed yet, just to match the x-axis
+    .call(yAxis);
+
+  // Step 5.1: add brushing once everything else is drawn
+  createBrushSelector(svg);
+}
+
+// Month ticks (e.g. "November") would collide with the day labels next to
+// them, so give them a longer tick line and drop their label below the days.
+// A tick is a month start if rounding it down to its month changes nothing.
+// (Its own function since Lab 8: the x-axis is redrawn on every slider move,
+// and each redraw needs this styling again)
+function styleMonthTicks(xAxisGroup) {
   xAxisGroup
     .selectAll('.tick')
     .filter((d) => +d3.timeMonth(d) === +d)
@@ -204,14 +220,56 @@ function renderScatterPlot(data, commits) {
       tick.select('line').attr('y2', 18); // normal ticks are 6 long
       tick.select('text').attr('y', 21); // normal labels sit at 9
     });
+}
 
-  svg
-    .append('g')
-    .attr('transform', `translate(${usableArea.left}, 0)`)
-    .call(yAxis);
+// Lab 8 Step 1.2: redraw the existing chart for a new set of commits.
+// renderScatterPlot can't be reused for this: it appends a new <svg> every
+// time, so calling it on each slider move would stack up copies of the chart.
+// This version selects the <svg> that's already there and only changes what
+// depends on the commits: the x-axis range, the dot sizes, and the dots.
+// (No margins/usableArea needed: the axis groups keep their old positions)
+function updateScatterPlot(data, commits) {
+  const svg = d3.select('#chart').select('svg');
 
-  // Step 5.1: add brushing once everything else is drawn
-  createBrushSelector(svg);
+  // x now spans just the visible commits, so the dots spread across the
+  // full width instead of bunching up on the left
+  xScale = xScale.domain(d3.extent(commits, (d) => d.datetime)).nice();
+
+  // same sizing rule as renderScatterPlot, recomputed for the visible commits
+  const [minLines, maxLines] = d3.extent(commits, (d) => d.totalLines);
+  const rScale = d3.scaleSqrt().domain([minLines, maxLines]).range([3, 20]);
+
+  // redraw the x-axis: empty the old group, then draw the new axis into it
+  // (appending a new <g> instead would pile axes on top of each other)
+  const xAxis = d3.axisBottom(xScale);
+  const xAxisGroup = svg.select('g.x-axis');
+  xAxisGroup.selectAll('*').remove();
+  xAxisGroup.call(xAxis);
+  styleMonthTicks(xAxisGroup);
+
+  // reuse the existing dots group; join() adds circles for new commits,
+  // removes extra ones, and updates the rest
+  const dots = svg.select('g.dots');
+  const sortedCommits = d3.sort(commits, (d) => -d.totalLines);
+  dots
+    .selectAll('circle')
+    .data(sortedCommits)
+    .join('circle')
+    .attr('cx', (d) => xScale(d.datetime))
+    .attr('cy', (d) => yScale(d.hourFrac))
+    .attr('r', (d) => rScale(d.totalLines)) // fill/opacity/hover still from style.css
+    .on('mouseenter', (event, commit) => {
+      renderTooltipContent(commit);
+      updateTooltipVisibility(true);
+      updateTooltipPosition(event);
+    })
+    .on('mouseleave', () => {
+      updateTooltipVisibility(false);
+    });
+
+  // the dots just moved, so if a brush box is drawn, re-check which
+  // dots are inside it now. d3.brushSelection reads the box's current corners
+  brushed({ selection: d3.brushSelection(svg.node()) });
 }
 
 // Step 5.1: let the user drag a rectangle over the chart to select commits
@@ -256,7 +314,7 @@ function isCommitSelected(selection, commit) {
 // Step 5.5: "N commits selected" under the chart
 function renderSelectionCount(selection) {
   const selectedCommits = selection
-    ? commits.filter((d) => isCommitSelected(selection, d))
+    ? filteredCommits.filter((d) => isCommitSelected(selection, d)) // Lab 8: only visible dots
     : [];
 
   const countElement = document.querySelector('#selection-count');
@@ -270,7 +328,7 @@ function renderSelectionCount(selection) {
 // Step 5.6: how many lines of each language the selected commits contributed
 function renderLanguageBreakdown(selection) {
   const selectedCommits = selection
-    ? commits.filter((d) => isCommitSelected(selection, d))
+    ? filteredCommits.filter((d) => isCommitSelected(selection, d)) // Lab 8: only visible dots
     : [];
   const container = document.getElementById('language-breakdown');
 
@@ -366,11 +424,15 @@ let timeScale = d3
   ])
   .range([0, 100]);
 
-// the latest moment to show commits for; later steps filter by this
+// the latest moment to show commits for
 let commitMaxTime = timeScale.invert(commitProgress);
 
+// Step 1.2: the commits made up to commitMaxTime.
+// Starts as all commits; gets updated as the user moves the slider
+let filteredCommits = commits;
+
 // runs whenever the slider moves: read its value, convert it to a date,
-// and show that date next to the slider
+// show that date next to the slider, and redraw the chart for it
 function onTimeSliderChange() {
   const slider = document.getElementById('commit-progress');
   const timeElement = document.getElementById('commit-time');
@@ -383,6 +445,11 @@ function onTimeSliderChange() {
     dateStyle: 'long',
     timeStyle: 'short',
   });
+
+  // Step 1.2: keep only commits made on or before the slider's date,
+  // then update the chart already on the page (not draw a new one)
+  filteredCommits = commits.filter((d) => d.datetime <= commitMaxTime);
+  updateScatterPlot(data, filteredCommits);
 }
 
 // 'input' fires continuously while dragging ('change' only fires on release)
@@ -390,8 +457,9 @@ document
   .getElementById('commit-progress')
   .addEventListener('input', onTimeSliderChange);
 
-// run once on load so the <time> isn't empty before the first drag
-onTimeSliderChange();
-
 renderCommitInfo(data, commits);
 renderScatterPlot(data, commits);
+
+// run once on load so the <time> isn't empty before the first drag.
+// Must come after renderScatterPlot: updateScatterPlot needs the chart to exist
+onTimeSliderChange();
