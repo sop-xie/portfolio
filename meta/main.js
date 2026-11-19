@@ -454,6 +454,42 @@ function onTimeSliderChange() {
   // then update the chart already on the page (not draw a new one)
   filteredCommits = commits.filter((d) => d.datetime <= commitMaxTime);
   updateScatterPlot(data, filteredCommits);
+  updateFileDisplay(filteredCommits); // Step 2.1
+}
+
+// Lab 8 Step 2.1: list each file and how many of its lines come from the
+// visible commits. Runs on load and on every slider move
+function updateFileDisplay(filteredCommits) {
+  // every line of code from the visible commits (the hidden .lines property
+  // from processCommits), flattened into one big list
+  let lines = filteredCommits.flatMap((d) => d.lines);
+
+  // group those lines by file: [{ name: 'style.css', lines: [...] }, ...]
+  let files = d3
+    .groups(lines, (d) => d.file)
+    .map(([name, lines]) => {
+      return { name, lines };
+    });
+
+  // one <div> per file, keyed by file name (same idea as Step 1.3's commit ids)
+  let filesContainer = d3
+    .select('#files')
+    .selectAll('div')
+    .data(files, (d) => d.name)
+    .join(
+      // only runs for files that don't have a <div> yet: build the empty
+      // <dt><code></code></dt><dd></dd> structure once
+      (enter) =>
+        enter.append('div').call((div) => {
+          div.append('dt').append('code');
+          div.append('dd');
+        }),
+    );
+
+  // runs for every file each time: fill in the name and the line count
+  // (the count changes as the slider moves, so it can't only be set on enter)
+  filesContainer.select('dt > code').text((d) => d.name);
+  filesContainer.select('dd').text((d) => `${d.lines.length} lines`);
 }
 
 // 'input' fires continuously while dragging ('change' only fires on release)

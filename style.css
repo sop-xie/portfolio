@@ -529,6 +529,30 @@ dl.stats dd small {
   font-variant-numeric: tabular-nums;
 }
 
+/* Meta page file list (Lab 8 Step 2.1) */
+#files {
+  /* Two columns: file names (1 share of the width), line counts (4 shares) */
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+
+  > div {
+    /* Each file's <div> spans both columns... */
+    grid-column: 1 / -1;
+    /* ...and reuses the parent's columns (subgrid) instead of making its own,
+       so every name and every count lines up across all the rows */
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+
+  dt {
+    grid-column: 1;
+  }
+
+  dd {
+    grid-column: 2;
+  }
+}
+
 /* Meta page scatterplot */
 .dots circle {
   /* Commit dots use the site accent, same purple as the cards and links */
