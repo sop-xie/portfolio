@@ -469,7 +469,10 @@ function updateFileDisplay(filteredCommits) {
     .groups(lines, (d) => d.file)
     .map(([name, lines]) => {
       return { name, lines };
-    });
+    })
+    // Step 2.3: biggest files first. sort's compare function returns
+    // negative if a goes first: b - a puts larger line counts before smaller
+    .sort((a, b) => b.lines.length - a.lines.length);
 
   // one <div> per file, keyed by file name (same idea as Step 1.3's commit ids)
   let filesContainer = d3
