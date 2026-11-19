@@ -478,18 +478,30 @@ function updateFileDisplay(filteredCommits) {
     .data(files, (d) => d.name)
     .join(
       // only runs for files that don't have a <div> yet: build the empty
-      // <dt><code></code></dt><dd></dd> structure once
+      // <dt></dt><dd></dd> structure once
       (enter) =>
         enter.append('div').call((div) => {
-          div.append('dt').append('code');
+          div.append('dt');
           div.append('dd');
         }),
     );
 
-  // runs for every file each time: fill in the name and the line count
-  // (the count changes as the slider moves, so it can't only be set on enter)
-  filesContainer.select('dt > code').text((d) => d.name);
-  filesContainer.select('dd').text((d) => `${d.lines.length} lines`);
+  // runs for every file each time: fill in the name, with the total line
+  // count underneath in a <small> (Step 2.2). The count changes as the slider
+  // moves, so it can't only be set on enter. .html() because it's two elements
+  filesContainer
+    .select('dt')
+    .html((d) => `<code>${d.name}</code><small>${d.lines.length} lines</small>`);
+
+  // Step 2.2: unit visualization, one dot (<div class="loc">) per line of code.
+  // select('dd') passes each file's data down to its <dd>, so d.lines below
+  // is that file's lines; join adds/removes dots to match the count
+  filesContainer
+    .select('dd')
+    .selectAll('div')
+    .data((d) => d.lines)
+    .join('div')
+    .attr('class', 'loc');
 }
 
 // 'input' fires continuously while dragging ('change' only fires on release)
