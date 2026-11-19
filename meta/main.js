@@ -166,7 +166,9 @@ function renderScatterPlot(data, commits) {
   const dots = svg.append('g').attr('class', 'dots');
   dots
     .selectAll('circle')
-    .data(sortedCommits)
+    // Lab 8 Step 1.3: key each circle by its commit id, so D3 matches
+    // circles to commits by id instead of by position in the list
+    .data(sortedCommits, (d) => d.id)
     .join('circle')
     .attr('cx', (d) => xScale(d.datetime))
     .attr('cy', (d) => yScale(d.hourFrac))
@@ -253,7 +255,9 @@ function updateScatterPlot(data, commits) {
   const sortedCommits = d3.sort(commits, (d) => -d.totalLines);
   dots
     .selectAll('circle')
-    .data(sortedCommits)
+    // Lab 8 Step 1.3: key each circle by its commit id, so D3 matches
+    // circles to commits by id instead of by position in the list
+    .data(sortedCommits, (d) => d.id)
     .join('circle')
     .attr('cx', (d) => xScale(d.datetime))
     .attr('cy', (d) => yScale(d.hourFrac))
