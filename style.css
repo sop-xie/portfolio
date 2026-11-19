@@ -529,6 +529,36 @@ dl.stats dd small {
   font-variant-numeric: tabular-nums;
 }
 
+/* Meta page scrollytelling layout (Lab 8 Step 3.1) */
+#scrolly-1 {
+  position: relative;
+  /* Story and chart side by side */
+  display: flex;
+  gap: 1rem;
+
+  > * {
+    /* Both columns grow to take an equal share of the width */
+    flex: 1;
+  }
+}
+
+#scatter-story {
+  position: relative;
+}
+
+#scatter-plot {
+  /* Scrolls normally until its top reaches the top of the screen (top: 0),
+     then stays pinned there while the story column keeps scrolling */
+  position: sticky;
+  top: 0;
+  left: 0;
+  bottom: auto;
+  /* Required for sticky to work here: flex items stretch to match the
+     tallest column (the long story), and an element as tall as its
+     container has no room to stick. A fixed height gives it room */
+  height: 50vh;
+}
+
 /* Meta page file list (Lab 8 Step 2.1) */
 #files {
   /* Two columns: file names (1 share of the width), line counts (4 shares) */
