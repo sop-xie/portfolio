@@ -1,4 +1,6 @@
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
+// Lab 8 Step 3.3: Scrollama tells us which story step is on screen
+import scrollama from 'https://cdn.jsdelivr.net/npm/scrollama@3.2.0/+esm';
 
 // Step 1.1: read loc.csv (one row per line of code)
 async function loadData() {
@@ -441,13 +443,20 @@ let commitMaxTime = timeScale.invert(commitProgress);
 let filteredCommits = commits;
 
 // runs whenever the slider moves: read its value, convert it to a date,
-// show that date next to the slider, and redraw the chart for it
+// and redraw everything for that date
 function onTimeSliderChange() {
   const slider = document.getElementById('commit-progress');
-  const timeElement = document.getElementById('commit-time');
 
   commitProgress = Number(slider.value); // input values are strings
   commitMaxTime = timeScale.invert(commitProgress);
+
+  updateForMaxTime();
+}
+
+// Lab 8 Step 3.3: everything that depends on commitMaxTime, in one place so
+// both the slider and scrolling (onStepEnter, bottom of file) can use it
+function updateForMaxTime() {
+  const timeElement = document.getElementById('commit-time');
 
   // e.g. "November 18, 2026 at 3:12 PM"
   timeElement.textContent = commitMaxTime.toLocaleString('en', {
@@ -569,3 +578,31 @@ d3.select('#scatter-story')
       Then I looked over all I had made, and I saw that it was very good.
     `,
   );
+
+// Lab 8 Step 3.3: update the chart as you scroll through the story.
+// Scrollama calls this each time a .step crosses the middle of the screen
+// (scrolling down or back up). response.element is that .step <div>
+function onStepEnter(response) {
+  // D3 stores each element's bound data on it as __data__, so this is the
+  // commit object the step was made from in Step 3.2
+  const commit = response.element.__data__;
+
+  // show commits up to and including this one
+  commitMaxTime = commit.datetime;
+
+  // move the slider to match, so the two controls agree. timeScale turns the
+  // date back into 0–100. (Setting .value from code doesn't fire 'input',
+  // so this won't trigger onTimeSliderChange)
+  commitProgress = timeScale(commitMaxTime);
+  document.getElementById('commit-progress').value = commitProgress;
+
+  updateForMaxTime();
+}
+
+const scroller = scrollama();
+scroller
+  .setup({
+    container: '#scrolly-1', // the section being scrolled through
+    step: '#scrolly-1 .step', // the elements that trigger onStepEnter
+  })
+  .onStepEnter(onStepEnter);
