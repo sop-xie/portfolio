@@ -504,8 +504,24 @@ function updateFileDisplay(filteredCommits) {
     .selectAll('div')
     .data((d) => d.lines)
     .join('div')
-    .attr('class', 'loc');
+    .attr('class', 'loc')
+    // Step 2.4: each dot is one line, and each line's type (js/css/html)
+    // picks its color. Set as a CSS variable; .loc's background reads it
+    .attr('style', (d) => `--color: ${colors(d.type)}`);
 }
+
+// Lab 8 Step 2.4: one color per technology (the CSV's "type" column).
+// Same colors as the Projects pie chart. The lab uses d3.schemeTableau10;
+// listing the domain fixes which type gets which color, instead of
+// handing them out in whatever order types happen to show up
+let colors = d3
+  .scaleOrdinal()
+  .domain(['js', 'css', 'html'])
+  .range([
+    '#ccb8f1', // js: lavender
+    '#7c7fc0', // css: periwinkle
+    '#5fabbb', // html: teal-blue
+  ]);
 
 // 'input' fires continuously while dragging ('change' only fires on release)
 document

@@ -582,8 +582,8 @@ dl.stats dd small {
   aspect-ratio: 1;
   /* ...rounded into a circle */
   border-radius: 50%;
-  /* Placeholder: the site's purple for now; Step 2.4 colors dots by file type */
-  background: var(--color-accent);
+  /* Step 2.4: color by file type, set per dot in main.js as --color */
+  background: var(--color);
 }
 
 /* Meta page scatterplot */
