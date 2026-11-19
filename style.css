@@ -511,8 +511,19 @@ dl.stats dd small {
   display: flex;
   gap: 1rem;
 
+  /* Wider than the rest of the page (body is capped at 100ch), so the
+     visualizations can be bigger: almost the whole window (minus 3em for
+     side space + scrollbar), but no wider than 150ch on huge screens */
+  --scrolly-width: min(100vw - 3em, 150ch);
+  width: var(--scrolly-width);
+  /* Center it on the page: 100% is the normal page width, so this splits the
+     difference evenly. When the section is wider than the page, the margins
+     come out negative and it sticks out the same amount on both sides */
+  margin-inline: calc((100% - var(--scrolly-width)) / 2);
+
   > * {
-    /* Both columns grow to take an equal share of the width */
+    /* Story columns take 1 share of the width (the visualization
+       columns take 2, set on #scatter-plot and #files-plot below) */
     flex: 1;
   }
 }
@@ -536,22 +547,38 @@ dl.stats dd small {
 }
 
 #scatter-plot {
-  /* Scrolls normally until its top reaches 25vh (a quarter of the screen)
-     from the top of the screen, then stays pinned there while the story
-     column keeps scrolling */
+  /* 2 shares of the width vs. the story's 1: the chart gets 2/3 */
+  flex: 2;
+  /* Scrolls normally until its top reaches 10vh from the top of the
+     screen, then stays pinned there while the story column keeps scrolling */
   position: sticky;
-  /* It's 50vh tall (below), so pinning its top at 25vh leaves 25vh above
-     and 25vh below: centered on the screen instead of touching the top */
-  top: 25vh;
+  /* It's 80vh tall (below), so pinning its top at 10vh leaves 10vh above
+     and 10vh below: centered on the screen instead of touching the top */
+  top: 10vh;
   left: 0;
   bottom: auto;
   /* Required for sticky to work here: flex items stretch to match the
      tallest column (the long story), and an element as tall as its
      container has no room to stick. A fixed height gives it room */
-  height: 50vh;
+  height: 80vh;
+  /* Stack the chart, selection count, and language cards, and center them
+     vertically in the box, so the chart sits in the middle of the screen */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#chart svg {
+  /* The svg fills the column's width and gets 60% of that as height (its
+     1000x600 viewBox). In the wide column that could be taller than the
+     screen, so cap it, leaving ~9em of the 80vh box for the selection count
+     and language cards. If capped, the drawing shrinks to fit and stays centered */
+  max-height: calc(80vh - 9em);
 }
 
 #files-plot {
+  /* Same 2/3 share as the chart */
+  flex: 2;
   /* Step 4: pinned like the chart while its story scrolls by */
   position: sticky;
   /* A gap above it, like the chart. Smaller than the chart's 25vh because the
