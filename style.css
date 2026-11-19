@@ -503,6 +503,12 @@ dl.stats dd small {
   background-color: var(--color);
 }
 
+/* Meta page: space between the stat cards and the "Commits by time of day"
+   heading (the cards have margin: 0, so the heading sat right against them) */
+#stats {
+  margin-bottom: 3em;
+}
+
 /* Meta page scrollytelling layout (Lab 8 Step 3.1; #scrolly-2 added in Step 4) */
 #scrolly-1,
 #scrolly-2 {
@@ -512,9 +518,11 @@ dl.stats dd small {
   gap: 1rem;
 
   /* Wider than the rest of the page (body is capped at 100ch), so the
-     visualizations can be bigger: almost the whole window (minus 3em for
-     side space + scrollbar), but no wider than 150ch on huge screens */
-  --scrolly-width: min(100vw - 3em, 150ch);
+     visualizations can be bigger: almost the whole window, but no wider
+     than 150ch on huge screens. Minus 1.5in = 0.75in of space on each side
+     (CSS inches: 1in = 96px), so even if a scrollbar takes some of the
+     right side, there's still at least half an inch from the window edge */
+  --scrolly-width: min(100vw - 1.5in, 150ch);
   width: var(--scrolly-width);
   /* Center it on the page: 100% is the normal page width, so this splits the
      difference evenly. When the section is wider than the page, the margins
