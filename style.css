@@ -546,6 +546,13 @@ dl.stats dd small {
   position: relative;
 }
 
+/* Step 3.2: one commit's paragraph in the story */
+.step {
+  /* Space below each commit, so they read as separate paragraphs and
+     each one takes a moment to scroll past the chart */
+  padding-bottom: 3em;
+}
+
 #scatter-plot {
   /* Scrolls normally until its top reaches the top of the screen (top: 0),
      then stays pinned there while the story column keeps scrolling */

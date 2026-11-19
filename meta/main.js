@@ -51,7 +51,12 @@ function processCommits(data) {
       });
 
       return ret;
-    });
+    })
+    // Lab 8 Step 3.2: oldest commit first. d3.groups keeps commits in the
+    // order they first appear in loc.csv, which goes file by file, not by
+    // date, and the story below needs to tell them in time order.
+    // (Dates subtract as milliseconds, so a - b sorts earliest to latest)
+    .sort((a, b) => a.datetime - b.datetime);
 }
 
 // Step 1.3: show summary stats as a <dl> of cards
@@ -534,3 +539,33 @@ renderScatterPlot(data, commits);
 // run once on load so the <time> isn't empty before the first drag.
 // Must come after renderScatterPlot: updateScatterPlot needs the chart to exist
 onTimeSliderChange();
+
+// Lab 8 Step 3.2: the story. One <div class="step"> per commit, in time order,
+// in the left column. Scrollama (Step 3.3) watches the .step divs to know
+// which commit you've scrolled to
+d3.select('#scatter-story')
+  .selectAll('.step')
+  .data(commits)
+  .join('div')
+  .attr('class', 'step')
+  .html(
+    // d = this commit, i = its position (0 = the first commit)
+    (d, i) => `
+      On ${d.datetime.toLocaleString('en', {
+        dateStyle: 'full',
+        timeStyle: 'short',
+      })},
+      I made <a href="${d.url}" target="_blank">${
+        i > 0 ? 'another glorious commit' : 'my first commit, and it was glorious'
+      }</a>.
+      I edited ${d.totalLines} lines across ${
+        // number of different files this commit's lines are in
+        d3.rollups(
+          d.lines,
+          (D) => D.length,
+          (d) => d.file,
+        ).length
+      } files.
+      Then I looked over all I had made, and I saw that it was very good.
+    `,
+  );
